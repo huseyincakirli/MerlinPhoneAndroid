@@ -896,6 +896,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
                 VaxPhoneSIP.m_objVaxVoIP.OnFailToRegister(405,"NotAllowed");
                 VaxPhoneSIP.m_objVaxVoIP.UnInitialize();
                 isMerlin = false;
+                OnVaxStatusMsg("Register","Only Merlin IpPbx");
             }
             else
             {
