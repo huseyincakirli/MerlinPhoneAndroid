@@ -50,7 +50,8 @@
             android:fontFamily="sans-serif"
             android:text="Account Info"
             android:textColor="@color/colorAccent"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            />
 
     </LinearLayout>
 

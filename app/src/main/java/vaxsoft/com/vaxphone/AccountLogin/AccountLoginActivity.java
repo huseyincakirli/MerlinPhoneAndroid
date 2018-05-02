@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.util.Linkify;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -277,20 +278,29 @@ public class AccountLoginActivity extends AppCompatActivity
 
     void StartOpenMainTabWithDelay()
     {
-        StopOpenMainTabWithDelay();
 
-        mDelayHandler = new Handler();
+        if (VaxPhoneSIP.isMerlin)
+        {
+            StopOpenMainTabWithDelay();
 
-        mDelayHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent objIntent = new Intent(AccountLoginActivity.this, MainTabActivity.class);
-                startActivity(objIntent);
+            mDelayHandler = new Handler();
 
-                mDelayHandler = null;
-                finish();
-            }
-        }, 1000);
+            mDelayHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent objIntent = new Intent(AccountLoginActivity.this, MainTabActivity.class);
+                    startActivity(objIntent);
+
+                    mDelayHandler = null;
+                    finish();
+                }
+            }, 1000);
+        }
+        else   {
+            TextViewStatus.setText("Only Merlin IpPbx");
+        }
+
+
 
     }
 
@@ -327,6 +337,7 @@ public class AccountLoginActivity extends AppCompatActivity
             return;
 
         mLoginActivity.OnStatusText(sMsg);
+
     }
 
     public static void PostSuccessToRegister()

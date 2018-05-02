@@ -46,6 +46,7 @@ import vaxsoft.com.vaxphone.VaxStorage.Store.StoreRecent;
 public class VaxPhoneSIP extends VaxUserAgentLib
 {
     public static VaxPhoneSIP m_objVaxVoIP = null;
+    public static boolean isMerlin = false;
 
     private String m_sIncomingCallId = "";
     private String m_sLogFile = "";
@@ -58,6 +59,9 @@ public class VaxPhoneSIP extends VaxUserAgentLib
     private boolean m_bMuteSpk = false;
     private boolean m_bVoiceChangerEnabled = false;
     private boolean m_bVideoCaptureErrorShown = false;
+
+
+
 
     private DialRing m_objDialRing = null;
     private BusyRing m_objBusyRing = null;
@@ -791,6 +795,8 @@ public class VaxPhoneSIP extends VaxUserAgentLib
         CallInfo.PrepareCallInfo(sCallerName, sCallerId, sResultCallerName, sResultCallerId, sResultContactId);
 
         MainTabActivity.PostIncomingCall(sResultCallerName.toString(), sResultCallerId.toString());
+
+
     }
 
     @Override
@@ -883,12 +889,29 @@ public class VaxPhoneSIP extends VaxUserAgentLib
     @Override
     public void OnIncomingDiagnostic(String sMsgSIP, String sFromIP, int nFromPort)
     {
+        if (sMsgSIP.contains("SIP/2.0 200 OK"))
+        {
+            if (!sMsgSIP.contains("User-Agent: Merlin Fenix IpPbx"))
+            {
+                VaxPhoneSIP.m_objVaxVoIP.OnFailToRegister(405,"NotAllowed");
+                VaxPhoneSIP.m_objVaxVoIP.UnInitialize();
+                isMerlin = false;
+            }
+            else
+            {
+                isMerlin =true;
+            }
+        }
+
+
         if(m_sLogFile.equals(""))
             return;
 
         String sLogPacket = "Received: " + sFromIP + " \n " +  nFromPort + " \n " +  sMsgSIP;
 
         this.WriteToLogFile(sLogPacket);
+
+
     }
 
     @Override
