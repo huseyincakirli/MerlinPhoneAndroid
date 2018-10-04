@@ -71,13 +71,13 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         Toolbar = view.findViewById(R.id.actionbar);
         AccountSettingsRow = view.findViewById(R.id.AccountSettingsRow);
         EncryptionTunnelRow = view.findViewById(R.id.EncryptionTunnelRow);
-        VideoBitrateRow = view.findViewById(R.id.VideoBitrateRow);
-        VideoQualityRow = view.findViewById(R.id.VideoQualityRow);
-        VideoCodecsRow = view.findViewById(R.id.VideoCodecsRow);
+//        VideoBitrateRow = view.findViewById(R.id.VideoBitrateRow);
+//        VideoQualityRow = view.findViewById(R.id.VideoQualityRow);
+//        VideoCodecsRow = view.findViewById(R.id.VideoCodecsRow);
         AudioCodecsRow = view.findViewById(R.id.AudioCodecsRow);
         SpkMicRow = view.findViewById(R.id.SpkMicRow);
         RingTonesRow = view.findViewById(R.id.RingTonesRow);
-        VoiceChangerRow = view.findViewById(R.id.VoiceChangerRow);
+     //   VoiceChangerRow = view.findViewById(R.id.VoiceChangerRow);
         NetworkRow = view.findViewById(R.id.NetworkRow);
         DigitDTMFRow = view.findViewById(R.id.DigitDTMFRow);
         BtnResetAllSettings = view.findViewById(R.id.ResetAllSettingsRow);
@@ -106,33 +106,33 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
                 OnClickEncryptionTunnelRow();
             }
         });
+//
+//        VideoBitrateRow.setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View view)
+//            {
+//                OnClickVideoBitrateRow();
+//            }
+//        });
 
-        VideoBitrateRow.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                OnClickVideoBitrateRow();
-            }
-        });
-
-        VideoQualityRow.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                OnClickVideoQualityRow();
-            }
-        });
-
-        VideoCodecsRow.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                OnClickVideoCodecsRow();
-            }
-        });
+//        VideoQualityRow.setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View view)
+//            {
+//                OnClickVideoQualityRow();
+//            }
+//        });
+//
+//        VideoCodecsRow.setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View view)
+//            {
+//                OnClickVideoCodecsRow();
+//            }
+//        });
 
         AudioCodecsRow.setOnClickListener(new View.OnClickListener()
         {
@@ -161,14 +161,14 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
             }
         });
 
-        VoiceChangerRow.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                OnClickVoiceChangerRow();
-            }
-        });
+//        VoiceChangerRow.setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View view)
+//            {
+//                OnClickVoiceChangerRow();
+//            }
+//        });
 
         NetworkRow.setOnClickListener(new View.OnClickListener()
         {

@@ -1,6 +1,14 @@
 package vaxsoft.com.vaxphone.MainTab;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.RemoteInput;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -14,27 +22,43 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.telecom.Connection;
+import android.telecom.ConnectionRequest;
+import android.telecom.PhoneAccount;
+import android.telecom.PhoneAccountHandle;
+import android.telecom.TelecomManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import vaxsoft.com.vaxphone.ActionName;
 import vaxsoft.com.vaxphone.MainAPP.VaxPhoneAPP;
 import vaxsoft.com.vaxphone.MainDrawer.MainDrawerMenu;
 import vaxsoft.com.vaxphone.MainTab.CallTab.CallTabFragment;
+import vaxsoft.com.vaxphone.MainTab.CallTab.DialPad2;
 import vaxsoft.com.vaxphone.MainTab.ChatTab.ChatContactTabFragment;
+import vaxsoft.com.vaxphone.MainTab.ExtensionTab.ExtensionFragment;
 import vaxsoft.com.vaxphone.MainUtil.DialogUtil;
 import vaxsoft.com.vaxphone.MainUtil.IncomingCallDialog;
+//import vaxsoft.com.vaxphone.MainUtil.NotificationReceiver;
+import vaxsoft.com.vaxphone.MerlinConnectionService;
+import vaxsoft.com.vaxphone.PhoneSIP.CallInfo.CallInfo;
 import vaxsoft.com.vaxphone.R;
 import vaxsoft.com.vaxphone.MainTab.RecentTab.RecentTabFragment;
+import vaxsoft.com.vaxphone.VaxPhoneSIP;
 
 public class MainTabActivity extends AppCompatActivity
 {
     private static final int RECENT_FRAGMENT_TAB_ID = 0;
     private static final int CALL_FRAGMENT_TAB_ID   = 1;
+    private static  final  int EXTENSION_TAB_ID = 2;
 
     //private static final int CHAT_FRAGMENT_TAB_ID   = 2;
 
-    private final int TOTAL_FRAGMENT_TAB_COUNT = 2;
+    private final int TOTAL_FRAGMENT_TAB_COUNT = 3;
 
     private Toolbar mToolbar;
     private SectionsPagerAdapter mSectionsPagerAdapter;
@@ -52,7 +76,7 @@ public class MainTabActivity extends AppCompatActivity
 
     @SuppressLint("StaticFieldLeak")
     private static MainTabActivity mMainTab = null;
-
+    PhoneAccount account;
     /////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////
 
@@ -66,6 +90,8 @@ public class MainTabActivity extends AppCompatActivity
 
         m_objMainDrawerMenu = new MainDrawerMenu(this);
         m_aFragTabs = new Fragment[TOTAL_FRAGMENT_TAB_COUNT];
+
+
 
         LoadViewAll();
         LoadFragmentTabAll();
@@ -84,6 +110,70 @@ public class MainTabActivity extends AppCompatActivity
         mTabLayout.setupWithViewPager(mViewPager);
 
         AdjustTabLayout();
+
+
+        int page = getIntent().getIntExtra("One", m_nSelectedTabId);
+        mViewPager.setCurrentItem(page);
+
+        TelecomManager telecomManager = (TelecomManager) getApplicationContext().getSystemService(getApplicationContext().TELECOM_SERVICE);
+
+
+        PhoneAccountHandle phoneAccount = new PhoneAccountHandle(
+                new ComponentName(getApplicationContext(), MerlinConnectionService.class.getName()),
+                ActionName.PHONE_ACCOUNT_ID);
+        // register phone account
+        PhoneAccount.Builder builder =  PhoneAccount.builder(phoneAccount, ActionName.PHONE_ACCOUNT_ID).addSupportedUriScheme(PhoneAccount.SCHEME_SIP)
+                .setCapabilities(
+                      //  PhoneAccount.CAPABILITY_CALL_PROVIDER |
+                        PhoneAccount.CAPABILITY_CONNECTION_MANAGER |
+                        PhoneAccount.CAPABILITY_CALL_SUBJECT|
+                       // PhoneAccount.CAPABILITY_SELF_MANAGED |
+                        PhoneAccount.CAPABILITY_CONNECTION_MANAGER |
+                        PhoneAccount.CAPABILITY_CALL_PROVIDER
+                );
+
+         account = builder.build();
+
+        telecomManager.registerPhoneAccount(account);
+
+        if (!isPhoneAccountEnabled())
+        {
+            startActivity(new Intent(TelecomManager.ACTION_CHANGE_PHONE_ACCOUNTS));
+            
+        }
+
+
+
+//        String action =  getIntent().getAction();
+//        if (action == "notify")
+//        {
+//            if (VaxPhoneSIP.m_objVaxVoIP.IsOnline())
+//            {
+//                String callerId = getIntent().getStringExtra("CallerId");
+//                String callerName = getIntent().getStringExtra("CallerName");
+//                mMainTab.OnIncomingCall(callerName,callerId);
+//            }
+//
+//        }
+
+    }
+
+    private boolean isPhoneAccountEnabled()
+    {
+        TelecomManager telecomManager = (TelecomManager) getApplicationContext().getSystemService(getApplicationContext().TELECOM_SERVICE);
+        PhoneAccount phoneAccount = GetPhoneAccount(telecomManager);
+        return phoneAccount.isEnabled();
+    }
+
+    private PhoneAccount GetPhoneAccount(TelecomManager telecomManager)
+    {
+        PhoneAccountHandle phoneAccountHandle = new PhoneAccountHandle(
+                new ComponentName(getApplicationContext(), MerlinConnectionService.class.getName()),
+                ActionName.PHONE_ACCOUNT_ID);
+        PhoneAccount phoneAccount = telecomManager.getPhoneAccount(phoneAccountHandle);
+
+        return phoneAccount;
+
     }
 
     private void LoadViewAll()
@@ -160,8 +250,8 @@ public class MainTabActivity extends AppCompatActivity
     private void LoadFragmentTabAll()
     {
         m_aFragTabs[RECENT_FRAGMENT_TAB_ID] = new RecentTabFragment();
-        m_aFragTabs[CALL_FRAGMENT_TAB_ID] = new CallTabFragment();
-      // m_aFragTabs[CHAT_FRAGMENT_TAB_ID] = new ChatContactTabFragment();
+        m_aFragTabs[CALL_FRAGMENT_TAB_ID] = new DialPad2();
+        m_aFragTabs[EXTENSION_TAB_ID] = new ExtensionFragment();
     }
 
     private void ActivateTabSelectedListener()
@@ -210,19 +300,19 @@ public class MainTabActivity extends AppCompatActivity
 
                 SetActionBarTitle("Call");
 
-                CallTabFragment objCallFragment = (CallTabFragment) m_aFragTabs[CALL_FRAGMENT_TAB_ID];
+                DialPad2 objCallFragment = (DialPad2) m_aFragTabs[CALL_FRAGMENT_TAB_ID];
                 objCallFragment.OnTabSelected(true);
 
                 break;
 
-//            case CHAT_FRAGMENT_TAB_ID:
-//
-//                SetActionBarTitle("Chat Contacts");
-//
-//                ChatContactTabFragment objChatContactFragment = (ChatContactTabFragment) m_aFragTabs[CHAT_FRAGMENT_TAB_ID];
-//                objChatContactFragment.OnTabSelected(true);
-//
-//                break;
+            case EXTENSION_TAB_ID:
+
+                SetActionBarTitle("Extensions");
+
+                ExtensionFragment objExtensionFragment = (ExtensionFragment) m_aFragTabs[EXTENSION_TAB_ID];
+                objExtensionFragment.OnTabSelected(true);
+                objExtensionFragment.StartRedis();
+                break;
         }
     }
 
@@ -239,17 +329,18 @@ public class MainTabActivity extends AppCompatActivity
 
             case CALL_FRAGMENT_TAB_ID:
 
-                CallTabFragment objCallFragment = (CallTabFragment) m_aFragTabs[CALL_FRAGMENT_TAB_ID];
+                DialPad2 objCallFragment = (DialPad2) m_aFragTabs[CALL_FRAGMENT_TAB_ID];
                 objCallFragment.OnTabSelected(false);
 
                 break;
 
-//            case CHAT_FRAGMENT_TAB_ID:
-//
-//                ChatContactTabFragment objChatContactFragment = (ChatContactTabFragment) m_aFragTabs[CHAT_FRAGMENT_TAB_ID];
-//                objChatContactFragment.OnTabSelected(false);
-//
-//                break;
+            case EXTENSION_TAB_ID:
+
+                ExtensionFragment objExtensionFragment= (ExtensionFragment) m_aFragTabs[EXTENSION_TAB_ID];
+                objExtensionFragment.OnTabSelected(false);
+                objExtensionFragment.StopRedis();
+
+                break;
         }
     }
 
@@ -283,8 +374,8 @@ public class MainTabActivity extends AppCompatActivity
                 case CALL_FRAGMENT_TAB_ID:
                     return m_aFragTabs[CALL_FRAGMENT_TAB_ID];
 
-//                case CHAT_FRAGMENT_TAB_ID:
-//                    return m_aFragTabs[CHAT_FRAGMENT_TAB_ID];
+                case EXTENSION_TAB_ID:
+                    return m_aFragTabs[EXTENSION_TAB_ID];
             }
 
             return null;
@@ -306,8 +397,8 @@ public class MainTabActivity extends AppCompatActivity
                 case CALL_FRAGMENT_TAB_ID:
                     return R.drawable.ic_call;
 
-//                case CHAT_FRAGMENT_TAB_ID:
-//                    return R.drawable.ic_chat;
+                case EXTENSION_TAB_ID:
+                    return R.drawable.ic_contact;
             }
             return 0;
         }
@@ -316,10 +407,89 @@ public class MainTabActivity extends AppCompatActivity
     ///////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    public static void PostIncomingCall(String sCallerName, String sCallerId)
+    public static void PostIncomingCall(String sCallerName, String sCallerId,String sCallId)
     {
-        if (mMainTab != null)
+        if (mMainTab != null) {
+            generateNotification(mMainTab.getApplicationContext(), sCallerId,sCallerName,sCallId);
             mMainTab.OnIncomingCall(sCallerName, sCallerId);
+
+        }
+
+    }
+
+    private static void generateNotification(Context context, String callerId,String callerName,String sCallId) {
+
+
+
+         if (mMainTab.isPhoneAccountEnabled())
+         {
+             TelecomManager telecomManager = (TelecomManager)mMainTab.getSystemService(Context.TELECOM_SERVICE);
+             PhoneAccount account = mMainTab.GetPhoneAccount(telecomManager);
+             PhoneAccountHandle handle = account.getAccountHandle();
+             Bundle bundle = new Bundle();
+             bundle.putString("CallerId",callerId);
+             bundle.putString("CallerName",callerName);
+             bundle.putString("CallId",sCallId);
+             //bundle.putParcelable(TelecomManager.EXTRA_INCOMING_CALL_ADDRESS, handle);
+             telecomManager.addNewIncomingCall(handle,bundle);
+         }
+         else
+         {
+                NotificationManager notificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+                 Notification.Builder notification = new Notification.Builder(context)
+                         .setContentTitle("Merlin Phone")
+                         .setContentText("Call : "+callerId)
+                         .setSmallIcon(R.drawable.app_icon)
+                         .setPriority(Notification.PRIORITY_HIGH)
+                         .setDefaults(Notification.DEFAULT_ALL)
+                         .setAutoCancel(true);
+
+                 Intent notificationIntent = new Intent(context, MainTabActivity.class);
+                 notificationIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                 notificationIntent.setAction("notify");
+                 notificationIntent.putExtra("CallerId",callerId);
+                 notificationIntent.putExtra("CallerName",callerName);
+                 PendingIntent pendingIntent = PendingIntent.getActivity(context,1,notificationIntent,0);
+                 notification.setContentIntent(pendingIntent);
+                 notificationManager.notify(0, notification.build());
+         }
+    }
+
+
+
+    private static void callEndedNotification(Context context)
+    {
+
+        NotificationManager notificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.cancel(0);
+    }
+
+
+    private static void missedCallNotification(Context context,String callerId)
+    {
+        NotificationManager notificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+        Notification.Builder notification = new Notification.Builder(context)
+                .setContentTitle("Merlin Phone")
+                .setContentText("Missed Call : "+callerId)
+                .setSmallIcon(R.drawable.app_icon)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setAutoCancel(true);
+
+        Intent notificationIntent = new Intent(context, MainTabActivity.class);
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        // set intent so it does not start a new activity
+        //notificationIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context,1,notificationIntent,0);
+        notification.setContentIntent(pendingIntent);
+        notificationManager.notify(1, notification.build());
     }
 
     private void OnIncomingCall(String sCallerName, String sCallerId)
@@ -331,14 +501,19 @@ public class MainTabActivity extends AppCompatActivity
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
 
-    public static void PostIncomingCallEnded(String sCallId)
+    public static void PostIncomingCallEnded(String sCallId,String sCallerId,String sCallerName)
     {
         if (mMainTab != null)
-            mMainTab.OnIncomingCallEnded(sCallId);
+            mMainTab.OnIncomingCallEnded(sCallId,sCallerId,sCallerName);
     }
 
-    private void OnIncomingCallEnded(String sCallId)
+    private void OnIncomingCallEnded(String sCallId,String sCallerId,String sCallerName)
     {
+        callEndedNotification(getApplicationContext());
+
+        if (!VaxPhoneSIP.m_objVaxVoIP.IsLineConnected())
+            missedCallNotification(getApplicationContext(),sCallerId);
+
         if (m_objIncomingCallDialog == null)
             return;
 

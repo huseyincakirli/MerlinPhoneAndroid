@@ -13,7 +13,7 @@ import vaxsoft.com.vaxphone.VaxStorage.Store.StoreSettings.StoreAudioCodecs;
 
 public class AudioCodecsDialog extends DialogFragment
 {
-    final CharSequence[] aAudioCodecs = {"G711u-Law", "G711a-Law", "GSM", "iLBC", "G729"};
+    final CharSequence[] aAudioCodecs = {"GSM","iLBC", "G711a-Law", "G711u-Law","G729"};
     boolean[] m_aVoiceCodecs = null;
 
     @NonNull

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="200dp"
+    android:layout_height="150dp"
+    android:background="#3E80B4"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/btn_phone"
+        android:layout_width="155dp"
+        android:layout_height="29dp"
+
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/white"
+        android:clickable="true"
+        android:text="Phone Contacts"
+        android:textColor="#5DBCD2"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_extension"
+        app:layout_constraintVertical_bias="0.318" />
+
+    <Button
+        android:id="@+id/btn_extension"
+        android:layout_width="155dp"
+        android:layout_height="29dp"
+
+        android:layout_marginTop="28dp"
+        android:background="@android:color/white"
+        android:clickable="true"
+        android:text="Pbx Extensions"
+        android:textColor="#5DBCD2"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>

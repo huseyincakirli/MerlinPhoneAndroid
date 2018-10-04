@@ -20,7 +20,7 @@ import vaxsoft.com.vaxphone.VaxPhoneSIP;
 public class AccountInfoFragment extends Fragment
 {
     EditText Username, DisplayName, AuthLogin, AuthPassword, DoaminRealm, ServerIP, ServerPort;
-    CheckBox RegistrationSIP;
+   // CheckBox RegistrationSIP;
     ImageView ToolbarActionIcon;
     TextView ToolbarTitle;
 
@@ -55,7 +55,7 @@ public class AccountInfoFragment extends Fragment
         ServerIP = view.findViewById(R.id.ai_server_ip);
         ServerPort = view.findViewById(R.id.ai_server_port);
 
-        RegistrationSIP = view.findViewById(R.id.ai_sip_registration);
+//        RegistrationSIP = view.findViewById(R.id.ai_sip_registration);
     }
 
     private void InitListener()
@@ -91,9 +91,9 @@ public class AccountInfoFragment extends Fragment
         String sServerIP = ServerIP.getText().toString();
         String sServerPort = ServerPort.getText().toString();
 
-        boolean bRegistrationSIP = RegistrationSIP.isChecked();
+        boolean bRegistrationSIP = true;
 
-        VaxPhoneSIP.m_objVaxVoIP.SetLoginInfo(sUsername, sDisplayName, sAuthLogin, sAuthPassword, sDoaminRealm, sServerIP, sServerPort, bRegistrationSIP);
+        VaxPhoneSIP.m_objVaxVoIP.SetLoginInfo(sUsername, sDisplayName, sAuthLogin, sAuthPassword, sDoaminRealm, sServerIP, sServerPort, bRegistrationSIP,null,null,null,null);
 
         String info = getActivity().getClass().getSimpleName();
         if (info.equals("AccountLoginActivity"))
@@ -119,9 +119,10 @@ public class AccountInfoFragment extends Fragment
 
         AtomicBoolean bRegistrationSIP = new AtomicBoolean();
 
-        VaxPhoneSIP.m_objVaxVoIP.GetLoginInfo(sUsername, sDisplayName, sAuthLogin, sAuthPassword, sDoaminRealm, sServerIP, sServerPort, bRegistrationSIP);
+        VaxPhoneSIP.m_objVaxVoIP.GetLoginInfo(sUsername, sDisplayName, sAuthLogin, sAuthPassword, sDoaminRealm, sServerIP, sServerPort, bRegistrationSIP,
+                null,null,null,null);
 
-        SetData(sUsername.toString(), sDisplayName.toString(), sAuthLogin.toString(), sAuthPassword.toString(), sDoaminRealm.toString(), sServerIP.toString(), sServerPort.toString(), bRegistrationSIP.get());
+        SetData(sUsername.toString(), sDisplayName.toString(), sAuthLogin.toString(), sAuthPassword.toString(), sDoaminRealm.toString(), sServerIP.toString(), sServerPort.toString(), true);
     }
 
     private void SetData(String sUsername, String sDisplayName, String sAuthLogin, String sAuthPassword, String sDoaminRealm, String sServerIP, String sServerPort, boolean bRegistrationSIP)
@@ -140,6 +141,6 @@ public class AccountInfoFragment extends Fragment
         ServerIP.setText(sServerIP);
         ServerPort.setText(sServerPort);
 
-        RegistrationSIP.setChecked(bRegistrationSIP);
+       // RegistrationSIP.setChecked(bRegistrationSIP);
     }
 }

@@ -255,26 +255,6 @@
 
                 <View style="@style/HorizontalLineWithMargin" />
 
-                <RelativeLayout
-                    android:id="@+id/sip_registration_row"
-                    style="@style/CheckBoxRowLayout">
-
-                    <TextView
-                        style="@style/TextView"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="0dp"
-                        android:text="@string/sip_registration" />
-
-                    <CheckBox
-                        android:id="@+id/ai_sip_registration"
-                        style="@style/AlignRightEnd"
-                        android:layout_margin="0dp"
-                        android:checked="true"
-                        android:padding="0dp"
-                        android:textColor="@color/colorAccent" />
-
-                </RelativeLayout>
-
             </LinearLayout>
         </android.support.v7.widget.CardView>
 

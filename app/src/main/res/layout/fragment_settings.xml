@@ -79,53 +79,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/VideoBitrateRow"
-                    style="@style/RowLayout"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        style="@style/IconSettings"
-                        android:src="@drawable/ic_video_bitrate" />
-
-                    <TextView
-                        style="@style/TextViewSettings"
-                        android:text="@string/video_bitrate" />
-                </LinearLayout>
-
-                <View style="@style/HorizontalLineWithMargin" />
-
-                <LinearLayout
-                    android:id="@+id/VideoQualityRow"
-                    style="@style/RowLayout"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        style="@style/IconSettings"
-                        android:src="@drawable/ic_video_quality" />
-
-                    <TextView
-                        style="@style/TextViewSettings"
-                        android:text="@string/video_quality" />
-                </LinearLayout>
-
-
-                <View style="@style/HorizontalLineWithMargin" />
-
-                <LinearLayout
-                    android:id="@+id/VideoCodecsRow"
-                    style="@style/RowLayout">
-
-                    <ImageView
-                        style="@style/IconSettings"
-                        android:src="@drawable/ic_video_codec" />
-
-                    <TextView
-                        style="@style/TextViewSettings"
-                        android:text="@string/video_codecs" />
-                </LinearLayout>
-
-                <View style="@style/HorizontalLineWithMargin" />
 
                 <LinearLayout
                     android:id="@+id/AudioCodecsRow"
@@ -188,19 +141,6 @@
 
                 <View style="@style/HorizontalLineWithMargin" />
 
-                <LinearLayout
-                    android:id="@+id/VoiceChangerRow"
-                    style="@style/RowLayout"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        style="@style/IconSettings"
-                        android:src="@drawable/ic_voice" />
-
-                    <TextView
-                        style="@style/TextViewSettings"
-                        android:text="@string/voice_changer" />
-                </LinearLayout>
             </LinearLayout>
 
         </android.support.v7.widget.CardView>

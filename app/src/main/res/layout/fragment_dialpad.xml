@@ -35,7 +35,7 @@
         <EditText
             android:id="@+id/edittext_enter_number"
             style="@style/EditTextFullWidth"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:clickable="false"
             android:ems="11"
@@ -48,6 +48,13 @@
             android:paddingTop="10dp"
             android:text=""
             android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/lblName"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:textAlignment="center"
+            android:textColor="@color/colorAccent" />
     </LinearLayout>
 
     <LinearLayout

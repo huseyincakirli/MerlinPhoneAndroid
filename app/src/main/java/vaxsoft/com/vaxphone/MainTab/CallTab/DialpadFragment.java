@@ -2,6 +2,7 @@ package vaxsoft.com.vaxphone.MainTab.CallTab;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatImageView;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import java.util.Objects;
 
+import vaxsoft.com.vaxphone.MainTab.MainTabActivity;
 import vaxsoft.com.vaxphone.PhoneSIP.Contacts.Contacts;
 import vaxsoft.com.vaxphone.R;
 import vaxsoft.com.vaxphone.VaxPhoneSIP;
@@ -30,7 +32,7 @@ public class DialpadFragment extends Fragment
     TextView TextViewStatus;
     TextView ToolbarTitle;
     EditText EditText_DialNo;
-
+    TextView TextViewName;
     LinearLayout Dialpad_No1, Dialpad_No2, Dialpad_No3, Dialpad_No4, Dialpad_No5, Dialpad_No6,
                  Dialpad_No7, Dialpad_No8, Dialpad_No9, Dialpad_Delete, Dialpad_Hold, Dialpad_Contacts,
                  Dialpad_Star, Dialpad_No0, Dialpad_Hash, Dialpad_Dial;
@@ -71,9 +73,11 @@ public class DialpadFragment extends Fragment
         if (objBundle != null)
         {
             String sDialNo = objBundle.getString("CallerNum");
+            String sName = objBundle.getString("Name");
             if (sDialNo == null) sDialNo = "";
 
             EditText_DialNo.setText(sDialNo);
+            TextViewName.setText(sName);
         }
         else
         {
@@ -93,7 +97,7 @@ public class DialpadFragment extends Fragment
 
         TextViewStatus = view.findViewById(R.id.label_dialpad_status);
         TextViewStatus.setText(DialpadFragment.m_sLastStatusText);
-
+        TextViewName = view.findViewById(R.id.lblName);
         EditText_DialNo = view.findViewById(R.id.edittext_enter_number);
 
         Dialpad_No0 = view.findViewById(R.id.dialpad_num0);
@@ -159,11 +163,14 @@ public class DialpadFragment extends Fragment
                 onClickHoldButton();
             }
         });
+
         Dialpad_Contacts.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
+//                ContactDialog dialog = new ContactDialog(getActivity());
+//                dialog.show();
                 onClickContactButton();
             }
         });
@@ -210,6 +217,7 @@ public class DialpadFragment extends Fragment
 
         sNum = sNum.substring(0, sNum.length() - 1);
         EditText_DialNo.setText(sNum);
+        TextViewName.setText("");
     }
 
     private boolean onLongClickDeleteButton()
@@ -273,8 +281,9 @@ public class DialpadFragment extends Fragment
             DialIconSelected(true);
             DialBtnText.setText("END");
         }
-
-        getActivity().onBackPressed();
+        Intent myIntent = new Intent(getActivity(), MainTabActivity.class);
+        startActivity(myIntent);
+        //getActivity().onBackPressed();
     }
 
     public void OnDialpadClosed(){}
@@ -304,9 +313,12 @@ public class DialpadFragment extends Fragment
             if (resultCode == RESULT_OK)
             {
                 String sContactNum = m_objContacts.GetPickedContactNum(getActivity(), data);
+                String sContactName = m_objContacts.GetPickedContactName(getActivity(),data);
 
                 EditText_DialNo.getText().clear();
                 EditText_DialNo.setText(sContactNum);
+
+                TextViewName.setText(sContactName);
             }
         }
     }

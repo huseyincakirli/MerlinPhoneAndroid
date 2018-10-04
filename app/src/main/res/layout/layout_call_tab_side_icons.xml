@@ -54,6 +54,14 @@
                 </LinearLayout>
             </LinearLayout>
 
+
+
+
+
+
+
+
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -90,6 +98,10 @@
                 </LinearLayout>
             </LinearLayout>
 
+
+
+
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -99,8 +111,8 @@
                 <LinearLayout
                     android:id="@+id/layout_hold_call"
                     style="@style/LayoutForRoundButtonCallScreen"
-                    android:visibility="invisible"
-                    android:layout_marginEnd="8dp">
+                    android:layout_marginEnd="8dp"
+                    android:visibility="visible">
 
                     <android.support.v7.widget.AppCompatImageView
                         android:id="@+id/ic_holdcall"
@@ -108,7 +120,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:src="@drawable/hold_button_icon_state"
-                        android:tint="@color/colorPrimary" />
+                        android:tint="@color/colorPrimary"
+                        android:visibility="visible" />
 
                 </LinearLayout>
 
@@ -127,6 +140,44 @@
                 </LinearLayout>
 
             </LinearLayout>
+
+
+
+
+
+
+
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <LinearLayout
+                    android:id="@+id/layout_transfer_call"
+                    style="@style/LayoutForRoundButtonCallScreen"
+                    android:layout_marginEnd="8dp"
+                    android:visibility="visible"
+                    >
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/ic_transfercall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:src="@drawable/ic_send"
+                        android:tint="@color/colorPrimary"
+                        android:visibility="visible" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+
+
+
+
 
         </LinearLayout>
     </RelativeLayout>

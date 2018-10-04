@@ -28,10 +28,10 @@ public class CallTabFragment extends CustomTabFragment implements View.OnClickLi
 
     TextView TextViewStatus;
 
-    DeviceSurfaceView mDeviceSurfaceView;
-    RemoteSurfaceView mRemoteSurfaceView;
+    //DeviceSurfaceView mDeviceSurfaceView;
+    //RemoteSurfaceView mRemoteSurfaceView;
 
-    CallIconsFragment mIconsCallFragment = null;
+    static CallIconsFragment mIconsCallFragment = null;
 
     private RelativeLayout ParentView;
 
@@ -70,7 +70,7 @@ public class CallTabFragment extends CustomTabFragment implements View.OnClickLi
 
     private void ActivateClickListeners()
     {
-        mDeviceSurfaceView.setOnClickListener(this);
+        //mDeviceSurfaceView.setOnClickListener(this);
         ParentView.setOnClickListener(this);
     }
 
@@ -168,8 +168,8 @@ public class CallTabFragment extends CustomTabFragment implements View.OnClickLi
         TextViewStatus = view.findViewById(R.id.label_status);
         TextViewStatus.setText(CallTabFragment.m_sLastStatusText);
 
-        mDeviceSurfaceView = view.findViewById(R.id.DeviceSurfaceView);
-        mRemoteSurfaceView = view.findViewById(R.id.SurfaceViewRemote);
+       // mDeviceSurfaceView = view.findViewById(R.id.DeviceSurfaceView);
+       // mRemoteSurfaceView = view.findViewById(R.id.SurfaceViewRemote);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -184,10 +184,10 @@ public class CallTabFragment extends CustomTabFragment implements View.OnClickLi
     {
         mIconsCallFragment.DisplayBtnAll();
 
-        if (!mDeviceSurfaceView.isShown())
-            mDeviceSurfaceView.setVisibility(View.VISIBLE);
-
-        mRemoteSurfaceView.DrawColorOnRemoteSurfaceView();
+//        if (!mDeviceSurfaceView.isShown())
+//            mDeviceSurfaceView.setVisibility(View.VISIBLE);
+//
+//        mRemoteSurfaceView.DrawColorOnRemoteSurfaceView();
     }
 
     private void OnVideoRemoteStart(int nLineNo)
@@ -227,7 +227,7 @@ public class CallTabFragment extends CustomTabFragment implements View.OnClickLi
         if (mCallFragment == null)
             return;
 
-        mCallFragment.mDeviceSurfaceView.DisplayFrameRGB(nDeviceId, pFrameRGB, nFrameSize, nFrameWidth, nFrameHeight);
+       // mCallFragment.mDeviceSurfaceView.DisplayFrameRGB(nDeviceId, pFrameRGB, nFrameSize, nFrameWidth, nFrameHeight);
     }
 
     public static void PostStatusText(String sMsg)
@@ -253,7 +253,7 @@ public class CallTabFragment extends CustomTabFragment implements View.OnClickLi
         if (mCallFragment == null)
             return;
 
-        mCallFragment.mRemoteSurfaceView.DisplayFrameRGB(nLineNo, pFrameRGB, nFrameSize, nFrameWidth, nFrameHeight);
+       // mCallFragment.mRemoteSurfaceView.DisplayFrameRGB(nLineNo, pFrameRGB, nFrameSize, nFrameWidth, nFrameHeight);
     }
 
     public static void OnVideoRemoteStarted(int nLineNo)
@@ -262,7 +262,7 @@ public class CallTabFragment extends CustomTabFragment implements View.OnClickLi
             return;
 
         mCallFragment.OnVideoRemoteStart(nLineNo);
-        mCallFragment.mDeviceSurfaceView.AdjustPreviewLayoutToThumbnail();
+        //mCallFragment.mDeviceSurfaceView.AdjustPreviewLayoutToThumbnail();
     }
 
     public static void OnVideoRemoteEnded(int nLineNo)
@@ -271,7 +271,7 @@ public class CallTabFragment extends CustomTabFragment implements View.OnClickLi
             return;
 
         mCallFragment.OnVideoRemoteStop(nLineNo);
-        mCallFragment.mDeviceSurfaceView.AdjustPreviewLayoutToFullScreen();
+       // mCallFragment.mDeviceSurfaceView.AdjustPreviewLayoutToFullScreen();
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -286,7 +286,7 @@ public class CallTabFragment extends CustomTabFragment implements View.OnClickLi
     {
         if (mCallFragment == null)
             return;
-
+        mIconsCallFragment.DisplayBtnAll();
         mCallFragment.OpenVideoCamera();
     }
 
@@ -316,10 +316,12 @@ public class CallTabFragment extends CustomTabFragment implements View.OnClickLi
         }
     }
 
+
+
     private void OnClickParentView()
     {
-        if (!mDeviceSurfaceView.isShown())
-            mDeviceSurfaceView.setVisibility(View.VISIBLE);
+//        if (!mDeviceSurfaceView.isShown())
+//            mDeviceSurfaceView.setVisibility(View.VISIBLE);
 
         mIconsCallFragment.DisplayBtnAll();
     }
@@ -332,10 +334,10 @@ public class CallTabFragment extends CustomTabFragment implements View.OnClickLi
             return;
         }
 
-        if (mDeviceSurfaceView.isShown())
-            mDeviceSurfaceView.setVisibility(View.INVISIBLE);
-        else
-            mDeviceSurfaceView.setVisibility(View.VISIBLE);
+//        if (mDeviceSurfaceView.isShown())
+//            mDeviceSurfaceView.setVisibility(View.INVISIBLE);
+//        else
+//            mDeviceSurfaceView.setVisibility(View.VISIBLE);
     }
 
     ///////////////////////////////////////////////////////////////////////////////

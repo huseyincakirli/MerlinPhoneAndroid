@@ -88,9 +88,6 @@ public class MainDrawerMenu implements NavigationView.OnNavigationItemSelectedLi
                 OnClickSettings();
                 break;
 
-            case R.id.nav_rate:
-                OnClickRateVaxPhone();
-                break;
 
             case R.id.nav_contactUs:
                 OnClickContactUs();
@@ -132,7 +129,7 @@ public class MainDrawerMenu implements NavigationView.OnNavigationItemSelectedLi
 
     private void OnClickContactUs()
     {
-        String sUrl = "http://www.vaxvoip.com";
+        String sUrl = "http://www.merlinyazilim.com.tr/";
         Uri uri = Uri.parse(sUrl);
 
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -151,6 +148,7 @@ public class MainDrawerMenu implements NavigationView.OnNavigationItemSelectedLi
     private void OnClickLogOut()
     {
         Intent objIntent = new Intent(mMainTabActivity, AccountLoginActivity.class);
+        objIntent.setAction("logout");
         mMainTabActivity.startActivity(objIntent);
         mMainTabActivity.finish();
     }
@@ -175,7 +173,8 @@ public class MainDrawerMenu implements NavigationView.OnNavigationItemSelectedLi
         StringBuilder sAuthLogin = new StringBuilder();
         StringBuilder sDoaminRealm = new StringBuilder();
 
-        VaxPhoneSIP.m_objVaxVoIP.GetLoginInfo(null, null, sAuthLogin, null, sDoaminRealm, null, null, null);
+        VaxPhoneSIP.m_objVaxVoIP.GetLoginInfo(null, null, sAuthLogin, null, sDoaminRealm, null, null,
+                null,null,null,null,null);
 
         TextViewUserInfo.setText(String.format("%s@%s", sAuthLogin.toString(), sDoaminRealm.toString()));
 

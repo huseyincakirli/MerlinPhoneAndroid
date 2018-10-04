@@ -38,6 +38,37 @@ public class StoreAudioCodecs
         PreferenceUtil.WritePreferenceValue(AUDIO_CODEC_G729, AudioCodecs[VaxPhoneSIP.VAX_CODEC_G729]);
     }
 
+    public void SetAudioCodec(int codecId)
+    {
+        switch (codecId)
+        {
+            case 0:
+                PreferenceUtil.WritePreferenceValue(AUDIO_CODEC_G711uLAW, true);
+                break;
+            case 1:
+                PreferenceUtil.WritePreferenceValue(AUDIO_CODEC_G711aLAW, true);
+                break;
+            case 2:
+                PreferenceUtil.WritePreferenceValue(AUDIO_CODEC_GSM, true);
+                break;
+            case 3:
+                PreferenceUtil.WritePreferenceValue(AUDIO_CODEC_iLBC,true);
+                break;
+            case 4:
+                PreferenceUtil.WritePreferenceValue(AUDIO_CODEC_G729, true);
+                break;
+            default:
+                break;
+        }
+    }
+
+//    public static final int VAX_CODEC_G711U  = 0;
+//    public static final int VAX_CODEC_G711A  = 1;
+//    public static final int VAX_CODEC_GSM610 = 2;
+//    public static final int VAX_CODEC_ILBC   = 3;
+//    public static final int VAX_CODEC_G729   = 4;
+
+
     /////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////
 }

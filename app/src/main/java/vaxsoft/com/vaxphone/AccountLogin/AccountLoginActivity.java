@@ -2,9 +2,13 @@ package vaxsoft.com.vaxphone.AccountLogin;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -14,19 +18,40 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.util.Linkify;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Console;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+//import io.lettuce.core.RedisChannelHandler;
+//import io.lettuce.core.RedisClient;
+//import io.lettuce.core.RedisConnectionStateListener;
+//import io.lettuce.core.pubsub.RedisPubSubListener;
+//import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
+import io.wf9a5m75.redis.RedisAndroid;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPubSub;
+import vaxsoft.com.vaxphone.CryptoHelper;
 import vaxsoft.com.vaxphone.MainAPP.VaxPhoneAPP;
 import vaxsoft.com.vaxphone.R;
 import vaxsoft.com.vaxphone.MainTab.MainTabActivity;
 import vaxsoft.com.vaxphone.MainUtil.DialogUtil;
+import vaxsoft.com.vaxphone.RedisIntentService;
 import vaxsoft.com.vaxphone.VaxPhoneSIP;
+import vaxsoft.com.vaxphone.VaxStorage.Store.StoreSettings.StoreAudioCodecs;
 
 public class AccountLoginActivity extends AppCompatActivity
 {
@@ -36,28 +61,95 @@ public class AccountLoginActivity extends AppCompatActivity
     private final int ID_REQUEST_READ_CONTACTS = 1000;
 
     EditText EditTextUsername, EditTextPassword, EditTextServerAddr;
-    Switch SwitchRegistrationSIP;
     TextView TextViewStatus;
     Button BtnLogin;
 
-    private Handler mDelayHandler = null;
+    private IntentIntegrator qrScan;
+    private Button buttonScan;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    private Handler mDelayHandler = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+
         super.onCreate(savedInstanceState);
+        if (VaxPhoneSIP.m_objVaxVoIP.IsOnline())
+        {
+            Intent myIntent = new Intent(this, MainTabActivity.class);
+            startActivity(myIntent);
+        }
+
+        CheckIfFromLink();
+
+
         setContentView(R.layout.activity_log_in);
 
         mLoginActivity = this;
         mDelayHandler = null;
 
         VaxPhoneSIP.m_objVaxVoIP.NetworkReachability(true);
-
+        qrScan = new IntentIntegrator(this);
         InitViews();
         UpdateUI();
+
+       if (getIntent().getAction() != "logout")
+       {
+           if (EditTextServerAddr.getText().toString() != "" || EditTextPassword.getText().toString() != "" || EditTextUsername.getText().toString() != "")
+           {
+               Initialize();
+           }
+       }
+
+       // Initialize();
+
+    }
+//    @Override
+//    protected void onCreateView(String name, Context context, AttributeSet attrs)
+//    {
+//
+//    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        CheckIfFromLink();
+        // unregisterReceiver(receiver);
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+       // unregisterReceiver(receiver);
+    }
+    @Override
+    protected void onPause() {
+        //super.onStop();
+        super.onPause();
+       // unregisterReceiver(receiver);
+    }
+
+
+
+    private void CheckIfFromLink()
+    {
+
+        Uri data = getIntent().getData();
+
+       // Toast.makeText(getApplicationContext(),3)
+      //  Toast.makeText(getApplicationContext(),"URL : " +data,Toast.LENGTH_LONG);
+
+        if (data != null)
+        {
+            String key = data.getQueryParameter("key");
+
+            if (key != null)
+            {
+               // Toast.makeText(getApplicationContext(),"KEY : " +key,Toast.LENGTH_LONG);
+                GetDataAndLogin(key);
+            }
+        }
+
     }
 
     private void InitViews()
@@ -65,9 +157,8 @@ public class AccountLoginActivity extends AppCompatActivity
         EditTextUsername = findViewById(R.id.username);
         EditTextPassword = findViewById(R.id.password);
         EditTextServerAddr = findViewById(R.id.server_ip_domain);
-
-        SwitchRegistrationSIP = findViewById(R.id.sip_registration);
-
+       // SwitchRegistrationSIP = findViewById(R.id.sip_registration);
+     // buttonScan = findViewById(R.id.btnQrScan);
         BtnLogin = findViewById(R.id.BtnLogin);
         TextViewStatus = findViewById(R.id.status);
     }
@@ -82,17 +173,15 @@ public class AccountLoginActivity extends AppCompatActivity
         StringBuilder ServerIP = new StringBuilder();
         StringBuilder ServerPort = new StringBuilder();
         AtomicBoolean RegistrationSIP = new AtomicBoolean();
+        StringBuilder RedisServer = new StringBuilder();
+        StringBuilder RedisPassword = new StringBuilder();
+        StringBuilder RedisPort = new StringBuilder();
 
-        VaxPhoneSIP.m_objVaxVoIP.GetLoginInfo(Username, DisplayName, AuthLogin, AuthPassword, DoaminRealm, ServerIP, ServerPort, RegistrationSIP);
+        VaxPhoneSIP.m_objVaxVoIP.GetLoginInfo(Username, DisplayName, AuthLogin, AuthPassword, DoaminRealm, ServerIP, ServerPort, RegistrationSIP,RedisServer,RedisPassword,RedisPort,null);
 
-        String sUsername = Username.toString();
-        String sDisplayName = DisplayName.toString();
-        String sAuthLogin = AuthLogin.toString();
         String sPassword = AuthPassword.toString();
-        String sDoaminRealm = DoaminRealm.toString();
         String sServerIP = ServerIP.toString();
         String sServerPort = ServerPort.toString();
-        boolean bRegistrationSIP = RegistrationSIP.get();
 
         EditTextUsername.setText(AuthLogin);
         EditTextPassword.setText(sPassword);
@@ -108,32 +197,28 @@ public class AccountLoginActivity extends AppCompatActivity
         }
 
         EditTextServerAddr.setText(sServerAddr);
-        SwitchRegistrationSIP.setChecked(bRegistrationSIP);
+        //SwitchRegistrationSIP.setChecked(bRegistrationSIP);
 
         if(VaxPhoneSIP.m_objVaxVoIP.IsOnline())
         {
-            BtnLogin.setText("LOG OUT");
+            BtnLogin.setText("Çıkış");
         }
         else
         {
-            BtnLogin.setText("LOG IN");
+            BtnLogin.setText("Bağlan");
         }
 
         TextViewStatus.setText(m_sLastStatusText);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
 
     public void BtnAccountInfo(View view)
     {
         UpdateLogInInfo();
-
         AccountInfoFragment objAccountInfo = new AccountInfoFragment();
-
         FragmentManager objFragManager = getSupportFragmentManager();
         FragmentTransaction objFragTransaction = objFragManager.beginTransaction();
-
         objFragTransaction.add(android.R.id.content, objAccountInfo ,"Account Info");
         objFragTransaction.addToBackStack("Account Info");
         objFragTransaction.commit();
@@ -149,7 +234,7 @@ public class AccountLoginActivity extends AppCompatActivity
             StopOpenMainTabWithDelay();
 
             VaxPhoneSIP.m_objVaxVoIP.UnInitialize();
-            BtnLogin.setText("LOG IN");
+            BtnLogin.setText("Bağlan");
 
             return;
         }
@@ -157,7 +242,7 @@ public class AccountLoginActivity extends AppCompatActivity
         if(!Initialize())
             return;
 
-        BtnLogin.setText("LOG OUT");
+        BtnLogin.setText("Çıkış");
     }
 
     private boolean Initialize()
@@ -170,8 +255,10 @@ public class AccountLoginActivity extends AppCompatActivity
         StringBuilder ServerIP = new StringBuilder();
         StringBuilder ServerPort = new StringBuilder();
         AtomicBoolean RegistrationSIP = new AtomicBoolean();
-
-        VaxPhoneSIP.m_objVaxVoIP.GetLoginInfo(Username, DisplayName, AuthLogin, AuthPassword, DomainRealm, ServerIP, ServerPort, RegistrationSIP);
+        StringBuilder sRedisServer = new StringBuilder();
+        StringBuilder sRedisPassword = new StringBuilder();
+        StringBuilder sRedisPort = new StringBuilder();
+        VaxPhoneSIP.m_objVaxVoIP.GetLoginInfo(Username, DisplayName, AuthLogin, AuthPassword, DomainRealm, ServerIP, ServerPort, RegistrationSIP,sRedisServer,sRedisPassword,sRedisPort,null);
 
         String sUsername = Username.toString();
         String sDisplayName = DisplayName.toString();
@@ -185,33 +272,116 @@ public class AccountLoginActivity extends AppCompatActivity
         if(!VaxPhoneSIP.m_objVaxVoIP.Initialize(sDisplayName, sUsername, sAuthLogin, sAuthPassword, sDomainRealm, sServerIP, nServerPort, bRegistrationSIP, this))
             return false;
 
-        if(!bRegistrationSIP)
-            StartOpenMainTabWithDelay();
+        StartOpenMainTabWithDelay();
 
         return true;
     }
 
-    public void BtnGetDemoAccount(View view)
+
+
+
+
+    public void BtnQrScanClick(View view)
     {
-        ShowTestAccountInfo();
-
-        long nDateTime = System.currentTimeMillis();
-        String sDateTime = String.valueOf(nDateTime);
-
-        EditTextUsername.setText(sDateTime);
-        EditTextPassword.setText(sDateTime);
-
-        EditTextServerAddr.setText("demo.vaxvoip.com:8891");
-
-        SwitchRegistrationSIP.setEnabled(true);
+        qrScan.initiateScan();
     }
 
-    private void ShowTestAccountInfo()
-    {
-        String sMsg = "Demo accounts are only for account-to-account VoIP calls. Use demo accounts in different devices to dial/receive VoIP calls.\n\nDial 000 for self testing.\n\n[Powered by VaxVoIP Server SDK]";
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
-        DialogUtil.ShowDialog(this, sMsg);
+
+        if (result != null) {
+            //if qrcode has nothing in it
+            if (result.getContents() == null) {
+                Toast.makeText(this, "Result Not Found", Toast.LENGTH_LONG).show();
+            } else {
+                //if qr contains data
+               GetDataAndLogin(result.getContents());
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
+
+    private void GetDataAndLogin(String key)
+    {
+        Toast.makeText(getApplicationContext(),key,Toast.LENGTH_LONG);
+        try {
+
+            key = key.replace(" ","+");
+            String decryptedJson = CryptoHelper.decrypt(key,CryptoHelper.QrKey);
+
+            JSONObject obj = new JSONObject(decryptedJson);
+            String sUsername = obj.getString("UserName");
+            String sServerIP = obj.getString("IpPbxServerAddress");
+            String sDisplayName = obj.getString("DisplayName");
+            String sAuthLogin = obj.getString("UserName");
+            String sAuthPassword = obj.getString("Password");
+            String sDoaminRealm = obj.getString("DomainRealm");
+            String sServerPort = obj.getString("ServerPort");
+            String sRedisServer = obj.getString("RedisServer");
+            String sRedisPort = obj.getString("RedisPort");
+            String sRedisPassword = obj.getString("RedisServerPassword");
+            String codecs = obj.getString("Codec");
+            String systemId = obj.getString("SystemId");
+
+            String[] splitArray = codecs.split(";");
+
+            boolean bRegistrationSIP = true;
+            VaxPhoneSIP.m_objVaxVoIP.SetLoginInfo(sUsername, sDisplayName, sAuthLogin,
+                    sAuthPassword, sDoaminRealm, sServerIP, sServerPort, bRegistrationSIP,sRedisServer,sRedisPassword,sRedisPort,systemId);
+
+            EditTextUsername.setText(sAuthLogin);
+            EditTextPassword.setText(sAuthPassword);
+            EditTextServerAddr.setText(sServerIP);
+
+            StoreAudioCodecs cStore = new StoreAudioCodecs();
+            VaxPhoneSIP.m_objVaxVoIP.DeselectAllVoiceCodec();
+
+            for (String item:splitArray) {
+                try
+                {
+                    int voiceCodec = Integer.parseInt(item);
+                    VaxPhoneSIP.m_objVaxVoIP.SelectVoiceCodec(voiceCodec);
+                    cStore.SetAudioCodec(voiceCodec);
+
+                }catch(Exception ex){
+                    //ss
+                }
+            }
+
+            if (!UpdateLogInInfo())
+                return;
+
+            if(VaxPhoneSIP.m_objVaxVoIP.IsOnline())
+            {
+                StopOpenMainTabWithDelay();
+
+                VaxPhoneSIP.m_objVaxVoIP.UnInitialize();
+                BtnLogin.setText("LOG IN");
+
+                return;
+            }
+
+            if(!Initialize())
+                return;
+
+            BtnLogin.setText("LOG OUT");
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+          //  Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +408,8 @@ public class AccountLoginActivity extends AppCompatActivity
         StringBuilder DisplayName = new StringBuilder();
         StringBuilder DomainRealm = new StringBuilder();
 
-        VaxPhoneSIP.m_objVaxVoIP.GetLoginInfo(Username, DisplayName, AuthLogin, null, DomainRealm, null, null, null);
+        VaxPhoneSIP.m_objVaxVoIP.GetLoginInfo(Username, DisplayName, AuthLogin, null, DomainRealm, null, null, null,
+                null,null,null,null);
 
         String sServerIP;
         String sServerPort;
@@ -256,7 +427,7 @@ public class AccountLoginActivity extends AppCompatActivity
             sServerPort = "5060";
         }
 
-        boolean bRegistrationSIP = SwitchRegistrationSIP.isChecked();
+        boolean bRegistrationSIP = true; //SwitchRegistrationSIP.isChecked();
 
         if (!AuthLogin.toString().equals(sAuthLogin))
         {
@@ -272,7 +443,7 @@ public class AccountLoginActivity extends AppCompatActivity
 
         String sAuthPwd = EditTextPassword.getText().toString();
 
-        VaxPhoneSIP.m_objVaxVoIP.SetLoginInfo(Username.toString(), DisplayName.toString(), sAuthLogin, sAuthPwd, DomainRealm.toString(), sServerIP, sServerPort, bRegistrationSIP);
+        VaxPhoneSIP.m_objVaxVoIP.SetLoginInfo(Username.toString(), DisplayName.toString(), sAuthLogin, sAuthPwd, DomainRealm.toString(), sServerIP, sServerPort, bRegistrationSIP,null,null,null,null);
         return true;
     }
 
@@ -390,6 +561,7 @@ public class AccountLoginActivity extends AppCompatActivity
     protected void onDestroy()
     {
         mLoginActivity = null;
+        //unregisterReceiver(receiver);
         super.onDestroy();
     }
 }

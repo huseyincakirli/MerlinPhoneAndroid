@@ -3,7 +3,7 @@ package vaxsoft.com.vaxphone.MainTab.ChatTab;
 import vaxsoft.com.vaxphone.VaxPhoneSIP;
 import vaxsoft.com.vaxphone.VaxStorage.Store.StoreChatContact;
 
-public class ChatContactRowData
+public class  ChatContactRowData
 {
     private long m_nMissedCount;
     private int m_nStatusId;

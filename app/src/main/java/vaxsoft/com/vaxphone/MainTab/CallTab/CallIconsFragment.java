@@ -1,6 +1,8 @@
 package vaxsoft.com.vaxphone.MainTab.CallTab;
 
 import android.app.Activity;
+import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatImageView;
@@ -11,13 +13,14 @@ import android.widget.LinearLayout;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import vaxsoft.com.vaxphone.MainTab.ExtensionTab.ExtensionFragment;
 import vaxsoft.com.vaxphone.R;
 import vaxsoft.com.vaxphone.MainTab.MainTabActivity;
 import vaxsoft.com.vaxphone.VaxPhoneSIP;
 
 public class CallIconsFragment extends DialpadFragment implements View.OnClickListener
 {
-    private LinearLayout  BtnSpkPhone, BtnDialpad, BtnEndCall, BtnHoldCall;
+    private LinearLayout  BtnSpkPhone, BtnDialpad, BtnEndCall, BtnHoldCall, BtnTransferCall;
 
     private Activity mActivity = null;
     private View SideIconsLayout = null;
@@ -25,6 +28,7 @@ public class CallIconsFragment extends DialpadFragment implements View.OnClickLi
 
     private Timer m_objHideIconTick = null;
     private final int HIDE_ICON_DELAY = 8500;  // milliseconds
+
 
     CallIconsFragment(Activity activity, View view)
     {
@@ -50,7 +54,7 @@ public class CallIconsFragment extends DialpadFragment implements View.OnClickLi
         //  BtnSwitchCamera   = view.findViewById(R.id.layout_switch_camera);
         BtnEndCall        = view.findViewById(R.id.layout_end_call);
         BtnHoldCall       = view.findViewById(R.id.layout_hold_call);
-
+        BtnTransferCall   = view.findViewById(R.id.layout_transfer_call);
         SideIconsLayout   = view.findViewById(R.id.IconsLayout);
     }
 
@@ -76,18 +80,18 @@ public class CallIconsFragment extends DialpadFragment implements View.OnClickLi
 
     private void StartHideBtnAllTick()
     {
-        if(m_objHideIconTick != null)
-            m_objHideIconTick.cancel();
-
-        m_objHideIconTick = new Timer();
-        m_objHideIconTick.schedule(new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                PostHideBtnAll();
-            }
-        }, HIDE_ICON_DELAY);
+//        if(m_objHideIconTick != null)
+//            m_objHideIconTick.cancel();
+//
+//        m_objHideIconTick = new Timer();
+//        m_objHideIconTick.schedule(new TimerTask()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                PostHideBtnAll();
+//            }
+//        }, HIDE_ICON_DELAY);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,6 +111,7 @@ public class CallIconsFragment extends DialpadFragment implements View.OnClickLi
 
         BtnEndCall.setOnClickListener(this);
         BtnHoldCall.setOnClickListener(this);
+        BtnTransferCall.setOnClickListener(this);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,12 +124,12 @@ public class CallIconsFragment extends DialpadFragment implements View.OnClickLi
 
     private void UpdateBtnViewAll(Boolean bShow)
     {
-        StartHideBtnAllTick();
+       // StartHideBtnAllTick();
 
         UpdateOtherBtnView(bShow);
         UpdateEndCallBtnView(bShow);
-
         UpdateHoldCallBtnView(bShow);
+        UpdateTransferCallBtnView(bShow);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -246,6 +251,33 @@ public class CallIconsFragment extends DialpadFragment implements View.OnClickLi
         BtnHoldCall.setVisibility(nVisibility);
     }
 
+
+    private void UpdateTransferCallBtnView(Boolean bShow)
+    {
+        if (!VaxPhoneSIP.m_objVaxVoIP.IsLineBusy())
+        {
+            bShow = false;
+        }
+
+        int nVisibility;
+
+        if(bShow)
+        {
+            if(BtnTransferCall.isShown())
+                return;
+
+            nVisibility = View.VISIBLE;
+        }
+        else
+        {
+            if(!BtnTransferCall.isShown())
+                return;
+
+            nVisibility = View.INVISIBLE;
+        }
+
+        BtnTransferCall.setVisibility(nVisibility);
+    }
     ///////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -256,14 +288,6 @@ public class CallIconsFragment extends DialpadFragment implements View.OnClickLi
 
         switch (nViewId)
         {
-//            case R.id.layout_switch_camera:
-//                OnClickBtnSwitchCamera();
-//                break;
-//
-//            case R.id.videocam:
-//                OnClickBtnVideo();
-//                break;
-
             case R.id.icon_mic:
                 OnClickBtnMic();
                 break;
@@ -290,6 +314,10 @@ public class CallIconsFragment extends DialpadFragment implements View.OnClickLi
 
             case R.id.layout_hold_call:
                 OnClickHoldCall();
+                break;
+
+            case R.id.layout_transfer_call:
+                OnTransferCall();
                 break;
         }
 
@@ -367,6 +395,12 @@ public class CallIconsFragment extends DialpadFragment implements View.OnClickLi
         }
 
         VaxPhoneSIP.m_objVaxVoIP.HoldLine();
+    }
+
+    private void OnTransferCall()
+    {
+        TabLayout tabhost = mActivity.findViewById(R.id.tabs);
+        tabhost.getTabAt(2).select();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

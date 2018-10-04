@@ -14,6 +14,10 @@ public class StoreLoginInfo
     private final String SERVER_IP = "VaxStoreLoginInfo_Server_IP";
     private final String SERVER_PORT = "VaxStoreLoginInfo_Server_Port";
     private final String SIP_REGISTRATION = "VaxStoreLoginInfo_Registration_SIP";
+    private final String REDIS_SERVER = "VaxStoreLoginInfo_Redis_Server";
+    private final String REDIS_PORT = "VaxStoreLoginInfo_Redis_Port";
+    private final String REDIS_PASSWORD = "VaxStoreLoginInfo_Redis_Password";
+    private final String SYSTEM_ID = "VaxStoreLoginInfo_System_Id";
 
     private String USERNAME_DEFAULT_VALUE = "";
     private String DISPLAY_NAME_DEFAULT_VALUE = "";
@@ -28,7 +32,8 @@ public class StoreLoginInfo
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     public void GetLoginInfo(StringBuilder sUsername, StringBuilder sDisplayName, StringBuilder sAuthLogin, StringBuilder sAuthPassword, StringBuilder sDoaminRealm,
-                             StringBuilder sServerIP, StringBuilder sServerPort, AtomicBoolean bRegistrationSIP)
+                             StringBuilder sServerIP, StringBuilder sServerPort, AtomicBoolean bRegistrationSIP,StringBuilder sRedisServer,StringBuilder sRedisPassword,
+                             StringBuilder sRedisPort,StringBuilder systemId)
     {
         if (sUsername != null)
             sUsername.append(PreferenceUtil.ReadPreferenceValue(USERNAME, USERNAME_DEFAULT_VALUE));
@@ -53,9 +58,22 @@ public class StoreLoginInfo
 
         if (bRegistrationSIP != null)
             bRegistrationSIP.set(PreferenceUtil.ReadPreferenceValue(SIP_REGISTRATION, SIP_REGISTRATION_DEFAULT_VALUE));
+
+        if (sRedisServer != null)
+            sRedisServer.append(PreferenceUtil.ReadPreferenceValue(REDIS_SERVER,""));
+
+        if(sRedisPassword != null)
+            sRedisPassword.append(PreferenceUtil.ReadPreferenceValue(REDIS_PASSWORD,""));
+
+        if (sRedisPort != null)
+            sRedisPort.append(PreferenceUtil.ReadPreferenceValue(REDIS_PORT,""));
+
+        if (systemId != null)
+            systemId.append(PreferenceUtil.ReadPreferenceValue(SYSTEM_ID,""));
     }
 
-    public void SetLoginInfo(String sUsername, String sDisplayName, String sAuthLogin, String sAuthPassword, String sDoaminRealm, String sServerIP, String sServerPort, boolean bRegistrationSIP)
+    public void SetLoginInfo(String sUsername, String sDisplayName, String sAuthLogin, String sAuthPassword, String sDoaminRealm, String sServerIP, String sServerPort, boolean bRegistrationSIP
+            ,String sRedisServer,String sRedisPassword,String sRedisPort,String systemId)
     {
         if (sUsername != null)
              PreferenceUtil.WritePreferenceValue(USERNAME, sUsername);
@@ -77,6 +95,17 @@ public class StoreLoginInfo
 
         if (sServerPort != null)
             PreferenceUtil.WritePreferenceValue(SERVER_PORT, sServerPort);
+
+        if (sRedisServer != null)
+            PreferenceUtil.WritePreferenceValue(REDIS_SERVER, sRedisServer);
+
+        if (sRedisPassword != null)
+            PreferenceUtil.WritePreferenceValue(REDIS_PASSWORD, sRedisPassword);
+
+        if (sRedisPort != null)
+            PreferenceUtil.WritePreferenceValue(REDIS_PORT, sRedisPort);
+        if (systemId != null)
+            PreferenceUtil.WritePreferenceValue(SYSTEM_ID, systemId);
 
         PreferenceUtil.WritePreferenceValue(SIP_REGISTRATION, bRegistrationSIP);
     }
