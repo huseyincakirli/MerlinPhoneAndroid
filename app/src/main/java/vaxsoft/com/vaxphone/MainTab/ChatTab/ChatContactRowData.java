@@ -1,5 +1,6 @@
 package vaxsoft.com.vaxphone.MainTab.ChatTab;
 
+import VaxVoIP.VaxUserAgentLib.VaxUserAgentLib;
 import vaxsoft.com.vaxphone.VaxPhoneSIP;
 import vaxsoft.com.vaxphone.VaxStorage.Store.StoreChatContact;
 
@@ -18,7 +19,7 @@ public class  ChatContactRowData
         m_nMissedCount = 0;
         m_bSelected = false;
 
-        m_nStatusId = VaxPhoneSIP.VAX_CHAT_CONTACT_STATUS_UNKNOWN;
+        m_nStatusId = VaxUserAgentLib.VAX_CHAT_CONTACT_STATUS_UNKNOWN;
         m_bPresence = false;
     }
 

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import VaxVoIP.VaxUserAgentLib.VaxUserAgentLib;
 import vaxsoft.com.vaxphone.R;
 import vaxsoft.com.vaxphone.VaxPhoneSIP;
 import vaxsoft.com.vaxphone.VaxStorage.Store.StoreSettings.StoreVoiceChanger;
@@ -83,7 +84,7 @@ public class VoiceChangerDialog extends DialogFragment
         StoreVoiceChanger objStoreVoiceChanger = new StoreVoiceChanger();
         int nVoiceChangerId = objStoreVoiceChanger.GetVoiceChanger();
 
-        int aVoicePitch[] = {VaxPhoneSIP.VAX_VOICE_PITCH_GRANDPA_DRUNK, VaxPhoneSIP.VAX_VOICE_PITCH_TEEN_BOY, VaxPhoneSIP.VAX_VOICE_PITCH_HOUSE_HOLD_REBOT, VaxPhoneSIP.VAX_VOICE_PITCH_HELIUM_INHALED, VaxPhoneSIP.VAX_VOICE_PITCH_CHIPMUNK};
+        int aVoicePitch[] = {VaxUserAgentLib.VAX_VOICE_PITCH_GRANDPA_DRUNK, VaxUserAgentLib.VAX_VOICE_PITCH_TEEN_BOY, VaxUserAgentLib.VAX_VOICE_PITCH_HOUSE_HOLD_REBOT, VaxUserAgentLib.VAX_VOICE_PITCH_HELIUM_INHALED, VaxUserAgentLib.VAX_VOICE_PITCH_CHIPMUNK};
         return aVoicePitch[nVoiceChangerId];
     }
 }

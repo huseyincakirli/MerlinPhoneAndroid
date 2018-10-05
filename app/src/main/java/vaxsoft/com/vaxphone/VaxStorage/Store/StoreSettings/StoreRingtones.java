@@ -1,12 +1,13 @@
 package vaxsoft.com.vaxphone.VaxStorage.Store.StoreSettings;
 
+import VaxVoIP.VaxUserAgentLib.VaxUserAgentLib;
 import vaxsoft.com.vaxphone.MainUtil.PreferenceUtil;
 import vaxsoft.com.vaxphone.VaxPhoneSIP;
 
 public class StoreRingtones
 {
     private final String RINGTONE = "VaxRingtone";
-    private final int DEFAULT_RINGTONE = VaxPhoneSIP.VAX_RING_TONE_DIGITAL_RAIN;
+    private final int DEFAULT_RINGTONE = VaxUserAgentLib.VAX_RING_TONE_DIGITAL_RAIN;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////

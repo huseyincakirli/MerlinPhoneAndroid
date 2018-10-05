@@ -16,7 +16,7 @@
     <color name="colorHeadingBackgraound">#f2f1d8</color>
     <color name="LineColor">#e7e5c9</color>
 
-    <color name="selected_row_transparent">#323232 </color>
+    <color name="selected_row_transparent">#323232</color>
 
     <color name="selected_row_accent_transparent">#53506754</color>
 
@@ -40,4 +40,6 @@
     <color name="colorPrimaryOpacity">#baeded6d</color>
 
     <color name="GrayColor">#898787</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

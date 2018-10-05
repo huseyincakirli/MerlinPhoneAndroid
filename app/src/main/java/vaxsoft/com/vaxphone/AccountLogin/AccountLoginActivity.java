@@ -89,7 +89,7 @@ public class AccountLoginActivity extends AppCompatActivity
         mLoginActivity = this;
         mDelayHandler = null;
 
-        VaxPhoneSIP.m_objVaxVoIP.NetworkReachability(true);
+        //VaxPhoneSIP.m_objVaxVoIP.NetworkReachability(true);
         qrScan = new IntentIntegrator(this);
         InitViews();
         UpdateUI();
@@ -337,13 +337,13 @@ public class AccountLoginActivity extends AppCompatActivity
             EditTextServerAddr.setText(sServerIP);
 
             StoreAudioCodecs cStore = new StoreAudioCodecs();
-            VaxPhoneSIP.m_objVaxVoIP.DeselectAllVoiceCodec();
+          //  VaxPhoneSIP.m_objVaxVoIP.DeselectAllVoiceCodec();
 
             for (String item:splitArray) {
                 try
                 {
                     int voiceCodec = Integer.parseInt(item);
-                    VaxPhoneSIP.m_objVaxVoIP.SelectVoiceCodec(voiceCodec);
+                   // VaxPhoneSIP.m_objVaxVoIP.SelectVoiceCodec(voiceCodec);
                     cStore.SetAudioCodec(voiceCodec);
 
                 }catch(Exception ex){

@@ -333,7 +333,7 @@ public class ChatContactTabFragment extends CustomTabFragment
         PreferenceUtil.WritePreferenceValue(CHAT_CONTACT_MISSED_COUNT_KEY, m_nChatContactMissedCount);
     }
 
-    private static int ReadMissedCount()
+    public static int ReadMissedCount()
     {
         return PreferenceUtil.ReadPreferenceValue(CHAT_CONTACT_MISSED_COUNT_KEY, 0);
     }

@@ -48,7 +48,7 @@ public class ChatContactRecyclerView extends CustomRecyclerView implements ICust
         //ChatContactTabFragment.SetMissedCount(0);
         ResetContactSelectedStateAll();
 
-        VaxPhoneSIP.m_objVaxVoIP.ChatSubscribeContactAll();
+       // VaxPhoneSIP.m_objVaxVoIP.ChatSubscribeContactAll();
 
         RefreshView();
     }

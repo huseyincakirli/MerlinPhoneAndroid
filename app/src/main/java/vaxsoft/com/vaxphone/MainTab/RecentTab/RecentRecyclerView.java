@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import java.util.ArrayList;
 
+import VaxVoIP.VaxUserAgentLib.VaxUserAgentLib;
 import vaxsoft.com.vaxphone.R;
 import vaxsoft.com.vaxphone.CustomViews.RecyclerView.CustomRecyclerView;
 import vaxsoft.com.vaxphone.CustomViews.RecyclerView.ICustomRecyclerView;
@@ -163,7 +164,7 @@ public class RecentRecyclerView extends CustomRecyclerView implements ICustomRec
 
     public static void PostAddCallHistory(int nRecordId, boolean bOutboundCallType, String sName, String sPhoneNo, long nStartTime, long nEndTime, long nDuration, long nDayNo, long nHistoryTypeId)
     {
-        if(!m_bIsRecentActivated  && !bOutboundCallType && nHistoryTypeId == VaxPhoneSIP.VAX_CALL_HISTORY_TYPE_MISSED)
+        if(!m_bIsRecentActivated  && !bOutboundCallType && nHistoryTypeId == VaxUserAgentLib.VAX_CALL_HISTORY_TYPE_MISSED)
             RecentTabFragment.SetMissedCount(-1);
 
         if(mRecentRecyclerView == null)

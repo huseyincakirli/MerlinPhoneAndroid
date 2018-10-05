@@ -356,7 +356,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 
     private void OnClickMultiTaskMode(boolean bChecked)
     {
-        VaxPhoneSIP.m_objVaxVoIP.BackgroundMode(bChecked);
+        //VaxPhoneSIP.m_objVaxVoIP.BackgroundMode(bChecked);
 
         StoreGeneralSettings objSettings = new StoreGeneralSettings();
         objSettings.SetMultiTaskMode(bChecked);
@@ -378,7 +378,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         StoreGeneralSettings objSettings = new StoreGeneralSettings();
 
         boolean bMultiTaskMode = objSettings.GetMultiTaskMode();
-        VaxPhoneSIP.m_objVaxVoIP.BackgroundMode(bMultiTaskMode);
+      //  VaxPhoneSIP.m_objVaxVoIP.BackgroundMode(bMultiTaskMode);
 
         boolean bDiagnosticLog = objSettings.GetDiagnosticLog();
         VaxPhoneSIP.m_objVaxVoIP.DiagnosticLog(bDiagnosticLog);

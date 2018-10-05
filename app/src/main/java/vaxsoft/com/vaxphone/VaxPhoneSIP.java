@@ -21,7 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import VaxVoIP.VaxUserAgentLib.IVaxUserAgentLib;
 import VaxVoIP.VaxUserAgentLib.VaxUserAgentLib;
+import vaxsoft.com.vaxphone.CallView.CallActivity;
+import vaxsoft.com.vaxphone.IncomingCall.IncomingCallActivity;
 import vaxsoft.com.vaxphone.MainDrawer.MainDrawerSettings.AudioCodecsDialog;
 import vaxsoft.com.vaxphone.MainDrawer.MainDrawerSettings.DigitDTMFDialog;
 import vaxsoft.com.vaxphone.MainDrawer.MainDrawerSettings.NetworkFragment;
@@ -35,6 +38,7 @@ import vaxsoft.com.vaxphone.MainDrawer.MainDrawerSettings.VideoQualityDialog;
 import vaxsoft.com.vaxphone.MainDrawer.MainDrawerSettings.VoiceChangerDialog;
 import vaxsoft.com.vaxphone.AccountLogin.AccountLoginActivity;
 import vaxsoft.com.vaxphone.MainAPP.VaxPhoneAPP;
+import vaxsoft.com.vaxphone.MainNotify.VaxPhoneNotify;
 import vaxsoft.com.vaxphone.MainTab.CallTab.DialpadFragment;
 import vaxsoft.com.vaxphone.PhoneSIP.BusyRing.BusyRing;
 import vaxsoft.com.vaxphone.PhoneSIP.CallInfo.CallInfo;
@@ -55,7 +59,7 @@ import vaxsoft.com.vaxphone.VaxStorage.Store.StoreRecent;
 
 
 
-public class VaxPhoneSIP extends VaxUserAgentLib
+public class VaxPhoneSIP extends VaxPhoneService implements IVaxUserAgentLib
 {
 
     public static VaxPhoneSIP m_objVaxVoIP = null;
@@ -75,7 +79,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
     private boolean m_bVoiceChangerEnabled = false;
     private boolean m_bVideoCaptureErrorShown = false;
 
-
+    VaxUserAgentLib mVaxAgentLib;
 
 
     private DialRing m_objDialRing = null;
@@ -83,12 +87,14 @@ public class VaxPhoneSIP extends VaxUserAgentLib
     private RingTone m_objRingTone = null;
     private PlayDTMF m_objPlayDTMF = null;
     private ProximitySensor m_objProximitySensor = null;
+    private VaxPhoneNotify mVaxPhoneNotify;
 
     public VaxPhoneSIP()
     {
-        super(VaxPhoneAPP.getAppContext());
+        //super(VaxPhoneAPP.getAppContext());
 
         m_objVaxVoIP = this;
+        mVaxAgentLib = new VaxUserAgentLib(VaxPhoneAPP.getAppContext(), this);
 
         m_objDialRing = new DialRing();
         m_objBusyRing = new BusyRing();
@@ -97,7 +103,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
         m_objPlayDTMF = new PlayDTMF();
 
         m_objProximitySensor = new ProximitySensor();
-
+        mVaxPhoneNotify = new VaxPhoneNotify(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,7 +113,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
     {
 
         //Production 6 2.8
-        super.SetLicenceKey("VAXVOIP.COM-128I182I84I11I237I90I7I127I215I236I226I57I144I106I175I218I96I86I156I89I148I74I200I97I6I77I104I232I86I210I42I198I169I187I115I34I46I68I220I150I233I30I232I171I31I203I245I143I31I45I141I172I91I231I180I122I45I126I94I27I196I164I96I139I88I69I201I102I236I7I21I172I184I201I114I203I75I166I67I198I192I177I234I152I107I191I0I181I173I171I67I18I175I30I170I182I235I120I222I202I157I239I168I107I19I91I31I243I241I172I119I12I219I125I5I213I42I21I234I93I85I203I235I110I158I168I41I188I207I70I149I27I236I71I30I43I229I0I41I187I232I132I187I19I128I239I124I22I77I184I236I30I11I71I117I208I159I90I111I124I186I239I167I4I177I61I53I221I171I228I142I98I212I8I32I91I184I65I125I26I154I19I180I150I196I182I87I14I61I85I203I96I66I161I12I189I195I167I88I208I230I149I169I74I241I86I152I241I71I80I6I110I107I157I163I104I43I29I35I143I24I189I69I243I161I7I146I247I158I19I61I191I146I249I150I207I196I255I65I217I101I127I153I47I71I60I95I58I164I208I145I110I24I75I70I44I215I153I242I94I55I2I218I19I117I247I8I231I32I109I223I121I251I149I255I141I9I32I154I182I117I196I60I101I56I239I88I236I5I72I154I159I5I160I251I70I166I140I100I245I112I144I76I58I183I238I97I172I254I129I207I146I87I188I101I22I249I1I181I148I56I21I236I99I140I11I58I216I17I108I92I133I-50.G729.UNLIMITED.MERLINYAZILIM.COM.TR",objContext);
+        mVaxAgentLib.SetLicenceKey("VAXVOIP.COM-128I182I84I11I237I90I7I127I215I236I226I57I144I106I175I218I96I86I156I89I148I74I200I97I6I77I104I232I86I210I42I198I169I187I115I34I46I68I220I150I233I30I232I171I31I203I245I143I31I45I141I172I91I231I180I122I45I126I94I27I196I164I96I139I88I69I201I102I236I7I21I172I184I201I114I203I75I166I67I198I192I177I234I152I107I191I0I181I173I171I67I18I175I30I170I182I235I120I222I202I157I239I168I107I19I91I31I243I241I172I119I12I219I125I5I213I42I21I234I93I85I203I235I110I158I168I41I188I207I70I149I27I236I71I30I43I229I0I41I187I232I132I187I19I128I239I124I22I77I184I236I30I11I71I117I208I159I90I111I124I186I239I167I4I177I61I53I221I171I228I142I98I212I8I32I91I184I65I125I26I154I19I180I150I196I182I87I14I61I85I203I96I66I161I12I189I195I167I88I208I230I149I169I74I241I86I152I241I71I80I6I110I107I157I163I104I43I29I35I143I24I189I69I243I161I7I146I247I158I19I61I191I146I249I150I207I196I255I65I217I101I127I153I47I71I60I95I58I164I208I145I110I24I75I70I44I215I153I242I94I55I2I218I19I117I247I8I231I32I109I223I121I251I149I255I141I9I32I154I182I117I196I60I101I56I239I88I236I5I72I154I159I5I160I251I70I166I140I100I245I112I144I76I58I183I238I97I172I254I129I207I146I87I188I101I22I249I1I181I148I56I21I236I99I140I11I58I216I17I108I92I133I-50.G729.UNLIMITED.MERLINYAZILIM.COM.TR");
         ////Production 5 2.7
         //super.SetLicenceKey("VAXVOIP.COM-74I53I186I0I221I48I119I217I188I180I59I140I144I106I175I218I96I86I156I89I148I74I200I97I6I77I104I232I86I210I42I198I169I187I115I34I46I68I220I150I233I30I232I171I31I203I245I143I31I45I141I172I91I231I180I122I45I126I94I27I196I164I96I139I88I69I201I102I236I7I21I172I184I201I114I203I75I166I67I198I192I177I234I152I107I191I0I181I173I171I67I18I175I30I170I182I235I120I222I202I157I239I168I107I19I91I31I243I241I172I119I12I219I125I5I213I42I21I234I93I85I203I235I110I158I168I41I188I207I70I149I27I236I71I30I43I229I0I41I187I232I132I187I19I128I239I124I22I77I184I236I30I11I71I117I208I159I90I111I124I186I239I167I4I177I61I53I221I171I228I142I98I212I8I32I91I184I65I125I26I154I19I180I150I196I182I87I14I61I85I203I96I66I161I12I189I195I167I88I208I230I149I169I74I241I86I152I241I71I80I6I110I107I157I163I104I43I29I35I143I24I189I69I243I161I7I146I247I158I19I61I191I146I249I150I207I196I255I65I217I101I127I153I47I71I60I95I58I164I208I145I110I24I75I70I44I215I153I242I94I53I236I77I127I250I166I214I206I32I109I223I121I251I149I255I141I9I32I154I182I117I196I60I101I56I239I88I236I5I72I154I159I248I107I81I143I121I251I100I254I112I144I76I58I183I238I97I172I254I129I207I146I87I188I101I22I249I1I181I148I56I21I236I99I140I11I58I216I17I108I92I133I-50.G729.UNLIMITED.MERLINYAZILIM.COM.TR",objContext);
 
@@ -125,19 +131,19 @@ public class VaxPhoneSIP extends VaxUserAgentLib
         if(!NetworkFragment.IsRandomPortSIP())
             nListenPortSIP = NetworkFragment.GetNetworkPortSIP();
 
-        if(!super.Initialize("", nListenPortSIP, sDisplayName, sUserName, sAuthLogin, sAuthPwd, sDomainRealm, sServerAddr, nServerPort, "", -1, true))
+        if(!mVaxAgentLib.Initialize("", nListenPortSIP, sDisplayName, sUserName, sAuthLogin, sAuthPwd, sDomainRealm, sServerAddr, nServerPort, "", -1, true))
             return false;
 
         if(bRegistrationSIP)
         {
-            if(!super.RegisterToProxy(1800))
+            if(!mVaxAgentLib.RegisterToProxy(1800))
                 return false;
         }
 
-        super.AutoRegistration(true, -1, 20);
-        super.EnableKeepAlive(10); // 10 seconds keep alive;
-         boolean isAgentSip = super.SetUserAgentSIP("Merlin Fenix IpPbx Android Client");
-         boolean isSubjectSdp =  super.SetSubjectSDP("Merlin Fenix IpPbx Android Client");
+        mVaxAgentLib.AutoRegistration(true, -1, 20);
+        mVaxAgentLib.EnableKeepAlive(10); // 10 seconds keep alive;
+         boolean isAgentSip = mVaxAgentLib.SetUserAgentSIP("Merlin Fenix IpPbx Android Client");
+         boolean isSubjectSdp =  mVaxAgentLib.SetSubjectSDP("Merlin Fenix IpPbx Android Client");
         isMerlin = isAgentSip && isSubjectSdp;
 
 
@@ -149,7 +155,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
     public void UnInitialize()
     {
         m_bOnline = false;
-        super.UnInitialize();
+        mVaxAgentLib.UnInitialize();
 
         m_bVideoCaptureErrorShown = false;
     }
@@ -194,14 +200,14 @@ public class VaxPhoneSIP extends VaxUserAgentLib
             boolean bPresence = Boolean.parseBoolean(String.valueOf(aSubList.get(3)));
             long nMissedCount = Long.valueOf(String.valueOf(aSubList.get(2)));
 
-            super.ChatAddContact(sContactName, bPresence);
+            mVaxAgentLib.ChatAddContact(sContactName, bPresence);
             ChatContactRecyclerView.PostChatContactAdded(sContactName, nMissedCount, bPresence);
         }
     }
 
     public boolean ChatAddContact(String sUserName, boolean bPresence)
     {
-        if(!super.ChatAddContact(sUserName, bPresence))
+        if(!mVaxAgentLib.ChatAddContact(sUserName, bPresence))
             return false;
 
         StoreChatContact objStore = new StoreChatContact();
@@ -218,25 +224,25 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     public boolean ChatSetMyStatus(int nStatusId)
     {
-        return super.ChatSetMyStatus(nStatusId);
+        return mVaxAgentLib.ChatSetMyStatus(nStatusId);
     }
 
     public boolean ChatSendMessageText(String sUserName, String sMsgText)
     {
-        if(!super.ChatSendMessageText(sUserName, sMsgText, 0, 0))
+        if(!mVaxAgentLib.ChatSendMessageText(sUserName, sMsgText, 0, 0))
             return false;
 
         StoreChatMsg objStore = new StoreChatMsg();
         objStore.AddChatMsg(sUserName, sMsgText, true);
 
-        ChatContactRecyclerView.PostChatMessageText(sUserName, super.ChatFindContact(sUserName), sMsgText, true);
+        ChatContactRecyclerView.PostChatMessageText(sUserName, mVaxAgentLib.ChatFindContact(sUserName), sMsgText, true);
 
         return true;
     }
 
     public boolean ChatRemoveContact(String sUserName)
     {
-        if(!super.ChatRemoveContact(sUserName))
+        if(!mVaxAgentLib.ChatRemoveContact(sUserName))
             return false;
 
         StoreChatContact objContactStore = new StoreChatContact();
@@ -282,7 +288,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
     public boolean PlayDTMF(String sDigit)
     {
        m_objPlayDTMF.PlayTone(sDigit);
-       return super.DigitDTMF(0, sDigit);
+       return mVaxAgentLib.DigitDTMF(0, sDigit);
     }
 
     public void SetRingtone(int nRingtone)
@@ -307,7 +313,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
         if(m_bFrontVideoCameraCaptured)
             nDeviceId = 1;
 
-        if(!super.OpenVideoDev(nDeviceId, nQuality))
+        if(!mVaxAgentLib.OpenVideoDev(nDeviceId, nQuality))
         {
             return false;
         }
@@ -319,7 +325,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
     public void CloseVideoDevice()
     {
         m_bVideoDeviceCaptured = false;
-        super.CloseVideoDev();
+        mVaxAgentLib.CloseVideoDev();
     }
 
     public void SwitchVideoDevice()
@@ -335,9 +341,9 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     public void ApplyVideoBitrate(int nQuality)
     {
-        VideoCodecBitRate(VAX_CODEC_VP8, nQuality);
-        VideoCodecBitRate(VAX_CODEC_H263P, nQuality);
-        VideoCodecBitRate(VAX_CODEC_H263, nQuality);
+        mVaxAgentLib.VideoCodecBitRate(VaxUserAgentLib.VAX_CODEC_VP8, nQuality);
+        mVaxAgentLib.VideoCodecBitRate(VaxUserAgentLib.VAX_CODEC_H263P, nQuality);
+        mVaxAgentLib.VideoCodecBitRate(VaxUserAgentLib.VAX_CODEC_H263, nQuality);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -350,7 +356,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     public boolean MuteMic(boolean bMute)
     {
-        if(!super.MuteMic(bMute))
+        if(!mVaxAgentLib.MuteMic(bMute))
         return false;
 
         m_bMuteMic = bMute;
@@ -364,7 +370,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     public boolean MuteSpk(boolean bMute)
     {
-        if(!super.MuteSpk(bMute))
+        if(!mVaxAgentLib.MuteSpk(bMute))
             return false;
 
         m_bMuteSpk = bMute;
@@ -376,17 +382,17 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     public boolean IsLineBusy()
     {
-        return super.IsLineBusy(0);
+        return mVaxAgentLib.IsLineBusy(0);
     }
 
     public boolean IsLineConnected()
     {
-        return super.IsLineConnected(0);
+        return mVaxAgentLib.IsLineConnected(0);
     }
 
     public boolean IsLineHold()
     {
-        return super.IsLineHold(0);
+        return mVaxAgentLib.IsLineHold(0);
     }
 
     public boolean IsOnline()
@@ -399,12 +405,12 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     public boolean HoldLine()
     {
-        return super.HoldLine(0);
+        return mVaxAgentLib.HoldLine(0);
     }
 
     public boolean UnHoldLine()
     {
-        return super.UnHoldLine(0);
+        return mVaxAgentLib.UnHoldLine(0);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -417,7 +423,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     public boolean EnableVideo(boolean bEnable)
     {
-        if(!super.EnableVideo(0, bEnable, bEnable))
+        if(!mVaxAgentLib.EnableVideo(0, bEnable, bEnable))
         {
             return false;
         }
@@ -432,7 +438,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     private boolean OpenLine()
     {
-        super.CloseLine(0);
+        mVaxAgentLib.CloseLine(0);
 
         int nLocalPortAudioRTP = -1;
         int nLocalPortVideoRTP = -1;
@@ -443,20 +449,20 @@ public class VaxPhoneSIP extends VaxUserAgentLib
             nLocalPortVideoRTP = nLocalPortAudioRTP + 2;
         }
 
-        return super.OpenLine(0, "", nLocalPortAudioRTP, nLocalPortVideoRTP);
+        return mVaxAgentLib.OpenLine(0, "", nLocalPortAudioRTP, nLocalPortVideoRTP);
     }
 
     public boolean DialCall(String sDialNo)
     {
         if(!OpenLine())
         {
-            String errorMsg = this.GetVaxErrorMsg();
-            Integer errorCode = this.GetVaxErrorCode();
+            String errorMsg = mVaxAgentLib.GetVaxErrorMsg();
+            Integer errorCode = mVaxAgentLib.GetVaxErrorCode();
             return false;
         }
 
 
-        return super.DialCall(0, "", "", sDialNo, -1, -1);
+        return   mVaxAgentLib.DialCall(0, "", "", sDialNo, -1, -1);
     }
 
     public boolean DisconnectCall()
@@ -464,7 +470,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
         if (!IsLineBusy())
             return false;
 
-        boolean bResult = super.DisconnectCall(0);
+        boolean bResult = mVaxAgentLib.DisconnectCall(0);
 
         OnVaxStatusMsg("Call", "Disconnected");
         OnDisconnectedCall();
@@ -521,12 +527,12 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     public boolean AutoGainSpk(boolean bEnable)
     {
-        return super.AutoGainSpk(bEnable, 20);
+        return mVaxAgentLib.AutoGainSpk(bEnable, 20);
     }
 
     public boolean AutoGainMic(boolean bEnable)
     {
-        return super.AutoGainMic(bEnable,20);
+        return mVaxAgentLib.AutoGainMic(bEnable,20);
     }
 
     public boolean SetVolumeBoostSpk(boolean bEnable)
@@ -536,7 +542,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
         if(bEnable)
             nBoostVol = 20;
 
-        return super.SetVolumeSpk(nBoostVol);
+        return mVaxAgentLib.SetVolumeSpk(nBoostVol);
     }
 
     public boolean SetVolumeBoostMic(boolean bEnable)
@@ -546,7 +552,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
         if(bEnable)
             nBoostVol = 20;
 
-        return super.SetVolumeMic(nBoostVol);
+        return mVaxAgentLib.SetVolumeMic(nBoostVol);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -562,10 +568,10 @@ public class VaxPhoneSIP extends VaxUserAgentLib
         if(!bEnable)
         {
             m_bVoiceChangerEnabled = false;
-            return super.VoiceChanger(-1);
+            return mVaxAgentLib.VoiceChanger(-1);
         }
 
-        if(!super.VoiceChanger(VoiceChangerDialog.GetSelectedPitchNo()))
+        if(!mVaxAgentLib.VoiceChanger(VoiceChangerDialog.GetSelectedPitchNo()))
             return false;
 
         m_bVoiceChangerEnabled = true;
@@ -577,7 +583,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     public boolean ForceDigitDTMF(int nTypeId, boolean bEnable)
     {
-        return super.ForceDigitDTMF(0, nTypeId, bEnable);
+        return mVaxAgentLib.ForceDigitDTMF(0, nTypeId, bEnable);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -585,7 +591,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     public void RejectCall()
     {
-        super.RejectCall(m_sIncomingCallId);
+        mVaxAgentLib.RejectCall(m_sIncomingCallId);
     }
 
     public void AcceptCall()
@@ -593,7 +599,7 @@ public class VaxPhoneSIP extends VaxUserAgentLib
         if(!OpenLine())
             return;
 
-        super.AcceptCall(0, m_sIncomingCallId, -1,-1);
+        mVaxAgentLib.AcceptCall(0, m_sIncomingCallId, -1,-1);
     }
 
     public void MuteRingTone()
@@ -602,6 +608,80 @@ public class VaxPhoneSIP extends VaxUserAgentLib
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    public boolean NetworkReachability(boolean bEnable)
+    {
+        return mVaxAgentLib.NetworkReachability(bEnable);
+    }
+
+    public boolean DialRingEnable(String sFileName)
+    {
+        return mVaxAgentLib.DialRingEnable(sFileName);
+    }
+
+    public boolean BusyRingEnable(String sFileName)
+    {
+        return mVaxAgentLib.BusyRingEnable(sFileName);
+    }
+
+    public boolean EchoCancellation(boolean bEnable)
+    {
+        return mVaxAgentLib.EchoCancellation(bEnable);
+    }
+
+    public boolean SelectVoiceCodec(int nCodecNo)
+    {
+        return mVaxAgentLib.SelectVoiceCodec(nCodecNo);
+    }
+
+    public boolean SelectVideoCodec(int nCodecNo)
+    {
+        return mVaxAgentLib.SelectVideoCodec(nCodecNo);
+    }
+
+    public void DeselectAllVideoCodec()
+    {
+        mVaxAgentLib.DeselectAllVideoCodec();
+    }
+
+    public void DeselectAllVoiceCodec()
+    {
+        mVaxAgentLib.DeselectAllVoiceCodec();
+    }
+
+    public boolean DeselectVoiceCodec(int nCodecNo)
+    {
+        return mVaxAgentLib.DeselectVoiceCodec(nCodecNo);
+    }
+
+    public boolean DeselectVideoCodec(int nCodecNo)
+    {
+        return mVaxAgentLib.DeselectVideoCodec(nCodecNo);
+    }
+
+    public boolean CryptCOMM(boolean bEnable, String sRemoteIP, int nRemotePort)
+    {
+        return mVaxAgentLib.CryptCOMM(bEnable, sRemoteIP, nRemotePort);
+    }
+
+    public boolean SpeakerPhone(boolean bEnable)
+    {
+        return mVaxAgentLib.SpeakerPhone(bEnable);
+    }
+
+    public boolean IsSpeakerPhone()
+    {
+        return mVaxAgentLib.IsSpeakerPhone();
+    }
+
+    public String GetVaxErrorMsg()
+    {
+        return mVaxAgentLib.GetVaxErrorMsg();
+    }
+
+    public Integer GetVaxErrorCode()
+    {
+        return mVaxAgentLib.GetVaxErrorCode();
+    }
     //////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
@@ -820,9 +900,6 @@ public class VaxPhoneSIP extends VaxUserAgentLib
     @Override
     public void OnIncomingCallStarted(String sCallId, String sCallerName, String sCallerId, String sDialNo, String sFromURI, String sToURI)
     {
-
-
-
         m_sIncomingCallId = sCallId;
 
         StringBuilder sResultCallerName = new StringBuilder();
@@ -832,8 +909,20 @@ public class VaxPhoneSIP extends VaxUserAgentLib
         CallInfo.PrepareCallInfo(sCallerName, sCallerId, sResultCallerName, sResultCallerId, sResultContactId);
         m_CallerId = sResultCallerId.toString();
         m_CallerName = sResultCallerName.toString();
-        MainTabActivity.PostIncomingCall(sResultCallerName.toString(), sResultCallerId.toString(),sCallId);
-        sendIncomingBroadcast(sCallId,sCallerId,sCallerName);
+        MainTabActivity.PostIncomingCall(m_CallerName, m_CallerId,sCallId);
+
+
+//        Intent objIntent = new Intent(this, CallActivity.class);
+//        objIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//
+//        objIntent.putExtra("CallerName", sCallerName);
+//        objIntent.putExtra("CallerId", sCallerId);
+
+ //       startActivity(objIntent);
+
+      //  m_sCallerName = sCallerName;
+      //  m_sCallerId = sCallerId;
+      //  sendIncomingBroadcast(sCallId,sCallerId,sCallerName);
 
     }
 
@@ -867,7 +956,10 @@ public class VaxPhoneSIP extends VaxUserAgentLib
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////
-
+    public boolean TransferCallBlind(int nLineNo, String sToUserName)
+    {
+        return mVaxAgentLib.TransferCallBlind(nLineNo,sToUserName);
+    }
     @Override///////////////////////////////////////////////////////////////////////////////
     public void OnTransferCallAccepted(int nLineNo)
     {
@@ -1215,6 +1307,21 @@ public class VaxPhoneSIP extends VaxUserAgentLib
     @Override
     public void OnAudioDeviceSpkVU(int nLevelVU)
     {
+    }
+
+    @Override
+    public void OnBusyLampSubscribeSuccess(String sUserName) {
+
+    }
+
+    @Override
+    public void OnBusyLampSubscribeFailed(String sUserName, int nStatusCode, String sReasonPhrase) {
+
+    }
+
+    @Override
+    public void OnBusyLampContactStatus(String sUserName, int nStatusId) {
+
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////

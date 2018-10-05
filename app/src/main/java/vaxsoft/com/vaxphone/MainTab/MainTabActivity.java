@@ -115,32 +115,32 @@ public class MainTabActivity extends AppCompatActivity
         int page = getIntent().getIntExtra("One", m_nSelectedTabId);
         mViewPager.setCurrentItem(page);
 
-        TelecomManager telecomManager = (TelecomManager) getApplicationContext().getSystemService(getApplicationContext().TELECOM_SERVICE);
+      //  TelecomManager telecomManager = (TelecomManager) getApplicationContext().getSystemService(getApplicationContext().TELECOM_SERVICE);
 
 
-        PhoneAccountHandle phoneAccount = new PhoneAccountHandle(
-                new ComponentName(getApplicationContext(), MerlinConnectionService.class.getName()),
-                ActionName.PHONE_ACCOUNT_ID);
+//        PhoneAccountHandle phoneAccount = new PhoneAccountHandle(
+//                new ComponentName(getApplicationContext(), MerlinConnectionService.class.getName()),
+//                ActionName.PHONE_ACCOUNT_ID);
         // register phone account
-        PhoneAccount.Builder builder =  PhoneAccount.builder(phoneAccount, ActionName.PHONE_ACCOUNT_ID).addSupportedUriScheme(PhoneAccount.SCHEME_SIP)
-                .setCapabilities(
-                      //  PhoneAccount.CAPABILITY_CALL_PROVIDER |
-                        PhoneAccount.CAPABILITY_CONNECTION_MANAGER |
-                        PhoneAccount.CAPABILITY_CALL_SUBJECT|
-                       // PhoneAccount.CAPABILITY_SELF_MANAGED |
-                        PhoneAccount.CAPABILITY_CONNECTION_MANAGER |
-                        PhoneAccount.CAPABILITY_CALL_PROVIDER
-                );
+//        PhoneAccount.Builder builder =  PhoneAccount.builder(phoneAccount, ActionName.PHONE_ACCOUNT_ID).addSupportedUriScheme(PhoneAccount.SCHEME_SIP)
+//                .setCapabilities(
+//                      //  PhoneAccount.CAPABILITY_CALL_PROVIDER |
+//                        PhoneAccount.CAPABILITY_CONNECTION_MANAGER |
+//                        PhoneAccount.CAPABILITY_CALL_SUBJECT|
+//                       // PhoneAccount.CAPABILITY_SELF_MANAGED |
+//                        PhoneAccount.CAPABILITY_CONNECTION_MANAGER |
+//                        PhoneAccount.CAPABILITY_CALL_PROVIDER
+//                );
+//
+//         account = builder.build();
+//
+//        telecomManager.registerPhoneAccount(account);
 
-         account = builder.build();
-
-        telecomManager.registerPhoneAccount(account);
-
-        if (!isPhoneAccountEnabled())
-        {
-            startActivity(new Intent(TelecomManager.ACTION_CHANGE_PHONE_ACCOUNTS));
-            
-        }
+//        if (!isPhoneAccountEnabled())
+//        {
+//            startActivity(new Intent(TelecomManager.ACTION_CHANGE_PHONE_ACCOUNTS));
+//
+//        }
 
 
 

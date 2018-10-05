@@ -351,6 +351,12 @@ public class DialPad2 extends CustomTabFragment implements View.OnClickListener 
          //   DialIconSelected(true);
          //   DialBtnText.setText("END");
         }
+        else
+        {
+            String errorMessage = VaxPhoneSIP.m_objVaxVoIP.GetVaxErrorMsg();
+            Integer errorCode = VaxPhoneSIP.m_objVaxVoIP.GetVaxErrorCode();
+            System.out.println(errorCode + " Error CODE :" + errorCode);
+        }
        // Intent myIntent = new Intent(getActivity(), MainTabActivity.class);
       //  startActivity(myIntent);
         //getActivity().onBackPressed();
