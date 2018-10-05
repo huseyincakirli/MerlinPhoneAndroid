@@ -13,6 +13,9 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.media.app.NotificationCompat;
 import android.telecom.DisconnectCause;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -56,8 +59,8 @@ import vaxsoft.com.vaxphone.VaxStorage.Store.StoreChatContact;
 import vaxsoft.com.vaxphone.VaxStorage.Store.StoreChatMsg;
 import vaxsoft.com.vaxphone.VaxStorage.Store.StoreLoginInfo;
 import vaxsoft.com.vaxphone.VaxStorage.Store.StoreRecent;
-
-
+import vaxsoft.com.vaxphone.MainNotify.VaxPhoneNotify;
+import vaxsoft.com.vaxphone.IncomingCall.IncomingCallActivity;
 
 public class VaxPhoneSIP extends VaxPhoneService implements IVaxUserAgentLib
 {
@@ -878,6 +881,7 @@ public class VaxPhoneSIP extends VaxPhoneService implements IVaxUserAgentLib
         CallTabFragment.PostConnectedCall();
 
         m_objProximitySensor.SetProximityMonitoringEnabled(true);
+        mVaxPhoneNotify.StartCallNotification(MainTabActivity.class, m_CallerName, m_CallerId);
     }
 
     @Override
@@ -892,6 +896,7 @@ public class VaxPhoneSIP extends VaxPhoneService implements IVaxUserAgentLib
         CallTabFragment.PostDisconnectedCall();
 
         m_objProximitySensor.SetProximityMonitoringEnabled(false);
+        mVaxPhoneNotify.StopCallNotification(true);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -909,16 +914,16 @@ public class VaxPhoneSIP extends VaxPhoneService implements IVaxUserAgentLib
         CallInfo.PrepareCallInfo(sCallerName, sCallerId, sResultCallerName, sResultCallerId, sResultContactId);
         m_CallerId = sResultCallerId.toString();
         m_CallerName = sResultCallerName.toString();
-        MainTabActivity.PostIncomingCall(m_CallerName, m_CallerId,sCallId);
+       // MainTabActivity.PostIncomingCall(m_CallerName, m_CallerId,sCallId);
 
 
-//        Intent objIntent = new Intent(this, CallActivity.class);
-//        objIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//
-//        objIntent.putExtra("CallerName", sCallerName);
-//        objIntent.putExtra("CallerId", sCallerId);
+        Intent objIntent = new Intent(this, IncomingCallActivity.class);
+        objIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
- //       startActivity(objIntent);
+        objIntent.putExtra("CallerName", sCallerName);
+        objIntent.putExtra("CallerId", sCallerId);
+
+        startActivity(objIntent);
 
       //  m_sCallerName = sCallerName;
       //  m_sCallerId = sCallerId;
@@ -930,7 +935,7 @@ public class VaxPhoneSIP extends VaxPhoneService implements IVaxUserAgentLib
     public void OnIncomingCallEnded(String sCallId)
     {
         //MerlinConnectionService.activeConnection.setDisconnected(new DisconnectCause(DisconnectCause.REMOTE));
-        sendLocalBroadcast(ActionName.END_CALL,sCallId);
+        //sendLocalBroadcast(ActionName.END_CALL,sCallId);
         MainTabActivity.PostIncomingCallEnded(sCallId,m_CallerId,m_CallerName);
         m_CallerId = "";
         m_CallerName = "";

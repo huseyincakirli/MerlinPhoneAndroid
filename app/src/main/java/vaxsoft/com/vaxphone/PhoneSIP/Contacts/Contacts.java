@@ -28,13 +28,7 @@ public class Contacts
 
         objFragment.startActivityForResult(intent, nRequestCode);
     }
-    public void  ShowContactView(Activity activity)
-    {
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
 
-        activity.startActivity(intent);
-    }
     ////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////
 

@@ -125,7 +125,7 @@ public class VaxUserAgentLib implements IVaxUserAgentSIP
     public boolean SetLicenceKey(String sKey)
     {
         //if(sKey == "TRIAL-LICENSE-KEY" || sKey.isEmpty())
-        //  ShowMsg(objContextShowMsg, "VaxVoIP SDK is free to use for 30 days.\n\nIf you want to continue using it after the trial period, you must pay the License fee.\n\nThank you for using VaxVoIP SDK!\n\nWeb: www.vaxvoip.com\nEmail: info@vaxvoip.com");
+          //  ShowMsg(objContextShowMsg, "VaxVoIP SDK is free to use for 30 days.\n\nIf you want to continue using it after the trial period, you must pay the License fee.\n\nThank you for using VaxVoIP SDK!\n\nWeb: www.vaxvoip.com\nEmail: info@vaxvoip.com");
 
         return mVaxUserAgentSIP.SetLicenceKey(sKey, mContext);
     }

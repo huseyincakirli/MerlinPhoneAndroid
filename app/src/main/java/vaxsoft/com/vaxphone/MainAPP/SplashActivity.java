@@ -8,7 +8,9 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import vaxsoft.com.vaxphone.AccountLogin.AccountLoginActivity;
+import vaxsoft.com.vaxphone.MainTab.MainTabActivity;
 import vaxsoft.com.vaxphone.R;
+import vaxsoft.com.vaxphone.VaxPhoneSIP;
 
 public class SplashActivity extends AppCompatActivity
 {
@@ -17,6 +19,8 @@ public class SplashActivity extends AppCompatActivity
     @Override
     public void onCreate(Bundle icicle)
     {
+        VaxPhoneSIP.StartService();
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -28,8 +32,14 @@ public class SplashActivity extends AppCompatActivity
             @Override
             public void run()
             {
-                Intent mainIntent = new Intent(SplashActivity.this, AccountLoginActivity.class);
-                startActivity(mainIntent);
+                Intent objIntent;
+
+                if (VaxPhoneSIP.m_objVaxVoIP.IsOnline())
+                    objIntent = new Intent(SplashActivity.this, MainTabActivity.class);
+                else
+                    objIntent = new Intent(SplashActivity.this, AccountLoginActivity.class);
+
+                startActivity(objIntent);
                 finish();
             }
         }, SPLASH_DISPLAY_LENGTH);

@@ -69,7 +69,7 @@ public class ContactDialog extends Dialog implements android.view.View.OnClickLi
             return;
         }
 
-        m_objContacts.ShowContactView(getOwnerActivity());
+       // m_objContacts.ShowContactView(getOwnerActivity());
 
 
     }

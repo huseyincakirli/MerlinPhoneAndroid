@@ -147,6 +147,7 @@ public class MainDrawerMenu implements NavigationView.OnNavigationItemSelectedLi
 
     private void OnClickLogOut()
     {
+        VaxPhoneSIP.m_objVaxVoIP.UnInitialize();
         Intent objIntent = new Intent(mMainTabActivity, AccountLoginActivity.class);
         objIntent.setAction("logout");
         mMainTabActivity.startActivity(objIntent);

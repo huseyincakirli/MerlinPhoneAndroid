@@ -421,39 +421,41 @@ public class MainTabActivity extends AppCompatActivity
 
 
 
-         if (mMainTab.isPhoneAccountEnabled())
-         {
-             TelecomManager telecomManager = (TelecomManager)mMainTab.getSystemService(Context.TELECOM_SERVICE);
-             PhoneAccount account = mMainTab.GetPhoneAccount(telecomManager);
-             PhoneAccountHandle handle = account.getAccountHandle();
-             Bundle bundle = new Bundle();
-             bundle.putString("CallerId",callerId);
-             bundle.putString("CallerName",callerName);
-             bundle.putString("CallId",sCallId);
-             //bundle.putParcelable(TelecomManager.EXTRA_INCOMING_CALL_ADDRESS, handle);
-             telecomManager.addNewIncomingCall(handle,bundle);
-         }
-         else
-         {
-                NotificationManager notificationManager = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
-                 Notification.Builder notification = new Notification.Builder(context)
-                         .setContentTitle("Merlin Phone")
-                         .setContentText("Call : "+callerId)
-                         .setSmallIcon(R.drawable.app_icon)
-                         .setPriority(Notification.PRIORITY_HIGH)
-                         .setDefaults(Notification.DEFAULT_ALL)
-                         .setAutoCancel(true);
+//         if (mMainTab.isPhoneAccountEnabled())
+//         {
+//             TelecomManager telecomManager = (TelecomManager)mMainTab.getSystemService(Context.TELECOM_SERVICE);
+//             PhoneAccount account = mMainTab.GetPhoneAccount(telecomManager);
+//             PhoneAccountHandle handle = account.getAccountHandle();
+//             Bundle bundle = new Bundle();
+//             bundle.putString("CallerId",callerId);
+//             bundle.putString("CallerName",callerName);
+//             bundle.putString("CallId",sCallId);
+//             //bundle.putParcelable(TelecomManager.EXTRA_INCOMING_CALL_ADDRESS, handle);
+//             telecomManager.addNewIncomingCall(handle,bundle);
+//         }
+//         else
+//         {
+//
+//         }
 
-                 Intent notificationIntent = new Intent(context, MainTabActivity.class);
-                 notificationIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                 notificationIntent.setAction("notify");
-                 notificationIntent.putExtra("CallerId",callerId);
-                 notificationIntent.putExtra("CallerName",callerName);
-                 PendingIntent pendingIntent = PendingIntent.getActivity(context,1,notificationIntent,0);
-                 notification.setContentIntent(pendingIntent);
-                 notificationManager.notify(0, notification.build());
-         }
+        NotificationManager notificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder notification = new Notification.Builder(context)
+                .setContentTitle("Merlin Phone")
+                .setContentText("Call : "+callerId)
+                .setSmallIcon(R.drawable.app_icon)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setAutoCancel(true);
+
+        Intent notificationIntent = new Intent(context, MainTabActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        notificationIntent.setAction("notify");
+        notificationIntent.putExtra("CallerId",callerId);
+        notificationIntent.putExtra("CallerName",callerName);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context,1,notificationIntent,0);
+        notification.setContentIntent(pendingIntent);
+        notificationManager.notify(0, notification.build());
     }
 
 
@@ -625,6 +627,8 @@ public class MainTabActivity extends AppCompatActivity
     protected void onDestroy()
     {
         mMainTab = null;
+        VaxPhoneSIP.RestartService();
         super.onDestroy();
+
     }
 }
